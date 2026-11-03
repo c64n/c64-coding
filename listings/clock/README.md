@@ -11,6 +11,7 @@ A digital clock for the Commodore 64: big digits made of reverse-video blocks, a
 | Length | 74 lines, 13 blocks (3,153 bytes) |
 | Keys | Digits, INST/DEL and RETURN to set it; <kbd>Y</kbd>/<kbd>N</kbd> for the alarm; any key stops the alarm; <kbd>Q</kbd> quits |
 | Special keys | None |
+| Video | [YouTube](https://youtu.be/hmrGro6zp3A) |
 | Article | [CLOCK: A Digital Clock with Big Digits and an Alarm](https://c64n.blogspot.com/2026/11/digital-clock.html) |
 
 ## Files
