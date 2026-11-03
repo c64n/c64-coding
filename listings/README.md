@@ -6,7 +6,8 @@
 4    "BALL"             PRG
 7    "QUADRATIC"        PRG
 13   "CLOCK"            PRG
-633 BLOCKS FREE.
+4    "DODGE"            PRG
+629 BLOCKS FREE.
 READY.
 ```
 
@@ -18,5 +19,6 @@ One folder per listing published on [c64n.blogspot.com](https://c64n.blogspot.co
 | 4 | [BALL](ball) | Graphics | [read](https://c64n.blogspot.com/2026/11/the-bouncing-ball-animation-with-poke.html) |
 | 7 | [QUADRATIC](quadratic) | Maths | [read](https://c64n.blogspot.com/2026/11/quadratic-equations.html) |
 | 13 | [CLOCK](clock) | Utilities | [read](https://c64n.blogspot.com/2026/11/digital-clock.html) |
+| 4 | [DODGE](dodge) | Games (assembly) | [read](https://c64n.blogspot.com/2026/11/dodge.html) |
 
 To run one, download its `.prg` and drag it onto a [VICE](https://vice-emu.sourceforge.io/) window.

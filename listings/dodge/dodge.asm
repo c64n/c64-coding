@@ -240,7 +240,7 @@ placeship
         lda #0
         sta msb
         lda px
-        asl a                     ; carry = bit 8 of px * 2
+        asl a                   ; carry = bit 8 of px * 2
         rol msb
         clc
         adc #24

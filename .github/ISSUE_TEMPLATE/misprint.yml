@@ -16,6 +16,7 @@ body:
         - BALL
         - QUADRATIC
         - CLOCK
+        - DODGE
         - Other (write it below)
     validations:
       required: true

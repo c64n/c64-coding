@@ -1,0 +1,718 @@
+<!--
+  POST:    DODGE: A Game in 6502 Assembly
+  LABELS:  Listing, Games, Assembly
+  PERMALINK (Custom): dodge
+  Paste in Blogger: New post > HTML view. Images load from the GitHub repo.
+-->
+
+<div class="info-card">
+  <p class="info-card-title">DODGE</p>
+  <dl>
+    <dt>Type</dt><dd>Game</dd>
+    <dt>Language</dt><dd>6502 assembly (64tass)</dd>
+    <dt>Size</dt><dd>938 bytes &middot; 4 blocks</dd>
+    <dt>Type-in</dt><dd>A BASIC loader: 78 lines of DATA with checksums</dd>
+    <dt>Controls</dt><dd>Joystick in port 2, or <kbd>Z</kbd> and <kbd>X</kbd>; fire or <kbd>SPACE</kbd> to start; <kbd>Q</kbd> to quit</dd>
+  </dl>
+</div>
+
+<p>The first program on this site that is not BASIC. DODGE is a tiny game written in 6502 assembly, the language of the C64&rsquo;s own processor: steer a ship along the bottom of the screen and dodge the rocks that fall faster and faster. It moves smoothly, 50 times a second, and the graphics chip itself tells the program when a rock hits you. All of it fits in 938 bytes.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="Animation: a yellow ship weaves between grey rocks falling down a black screen, with the score counting up at the top" height="482" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/dodge/dodge.gif" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto;border:3px solid #706deb;" width="640" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Recorded in VICE: the rocks fall a row at a time, the ship moves every frame.</td></tr></tbody></table>
+
+<!--more-->
+
+<h2>Two ways to run it</h2>
+<ul>
+  <li><strong>Download it:</strong> <a href="https://github.com/c64n/c64-coding/raw/main/listings/dodge/dodge.prg" rel="noopener">dodge.prg</a>, drop it on VICE, and it starts on its own. It begins with a BASIC line, <code>10 SYS 2061</code>, so <span class="cmd">RUN</span> works too.</li>
+  <li><strong>Type it in,</strong> the way magazines published machine code in the 1980s: as a BASIC program full of numbers. That is the listing below.</li>
+</ul>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="DODGE title screen: the name in yellow, the controls, and the high score" height="538" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/dodge/dodge-title.png" style="display:block;width:100%;max-width:711px;height:auto;margin:0 auto;border:3px solid #706deb;" width="711" /></td></tr><tr><td class="tr-caption" style="text-align:center;">The title screen. The high score stays until you switch off.</td></tr></tbody></table>
+
+<h2>The listing: a BASIC loader</h2>
+
+<div class="tip"><p>Every DATA line holds twelve numbers, the bytes of the program, and a thirteenth: their sum. The loader adds up each line as it reads it, so if you mistype a number it stops and tells you which line to check, for example <code>?CHECKSUM ERROR IN LINE 1050</code>. Fix that line and type <span class="cmd">RUN</span> again. When every line is right it says <code>OK. SYS 49152 TO PLAY</code> and starts the game. Save it before the first RUN.</p></div>
+
+<script type="text/plain" class="listing" data-name="DODGE">
+10 rem dodge - loader for the machine code
+20 rem c64 coding - c64n.blogspot.com
+30 rem
+100 a=49152:l=1000:rem start address, first data line
+110 print chr$(147);"poking the code..."
+120 read b:if b<0 then 200:rem -1 marks the end
+130 c=b:poke a,b:a=a+1:rem twelve numbers per line...
+140 for i=2 to 12:read b:poke a,b:a=a+1:c=c+b:next
+150 read s:if s<>c then print "?checksum error in line";l:end
+160 l=l+10:goto 120:rem ...and their sum
+200 print "ok. sys 49152 to play":sys 49152
+1000 data 32,84,192,32,173,192,32,210,192,176,45,32,1392
+1010 data 244,192,32,86,193,32,101,193,173,31,208,41,1526
+1020 data 1,208,23,206,160,195,208,238,173,161,195,141,1909
+1030 data 160,195,32,176,193,32,233,193,32,6,194,76,1522
+1040 data 14,192,32,101,194,76,3,192,169,0,141,21,1135
+1050 data 208,141,24,212,133,198,169,14,141,32,208,141,1621
+1060 data 134,2,169,6,141,33,208,169,147,76,210,255,1550
+1070 data 169,0,141,32,208,141,33,208,141,23,208,141,1445
+1080 data 29,208,141,28,208,141,27,208,141,167,195,141,1634
+1090 data 168,195,162,62,157,64,3,202,16,250,162,38,1479
+1100 data 189,119,195,157,64,3,202,16,247,169,13,141,1515
+1110 data 248,7,169,7,141,39,208,169,218,141,1,208,1556
+1120 data 162,24,169,0,157,0,212,202,16,250,169,255,1616
+1130 data 141,14,212,141,15,212,169,128,141,18,212,169,1572
+1140 data 143,141,24,212,96,169,0,141,21,208,169,147,1471
+1150 data 32,210,255,169,226,160,194,32,186,194,162,19,1839
+1160 data 160,19,24,32,240,255,173,168,195,32,83,194,1575
+1170 data 173,167,195,76,83,194,173,0,220,41,16,240,1578
+1180 data 249,165,203,201,64,208,243,165,203,201,62,240,2204
+1190 data 13,201,60,240,7,173,0,220,41,16,208,239,1418
+1200 data 24,96,56,96,169,147,32,210,255,162,0,169,1416
+1210 data 15,157,0,216,157,0,217,157,0,218,157,232,1526
+1220 data 218,232,208,241,169,89,160,195,32,186,194,162,2086
+1230 data 0,160,33,24,32,240,255,173,168,195,32,83,1395
+1240 data 194,173,167,195,32,83,194,169,0,141,165,195,1708
+1250 data 141,166,195,141,163,195,32,61,194,169,74,141,1672
+1260 data 158,195,32,149,193,169,6,141,161,195,141,160,1700
+1270 data 195,169,48,141,162,195,169,1,141,21,208,32,1482
+1280 data 86,193,173,31,208,96,173,18,208,201,251,240,1878
+1290 data 249,173,18,208,201,251,208,249,96,173,0,220,2046
+1300 data 41,4,240,20,165,203,201,12,240,14,173,0,1313
+1310 data 220,41,8,240,18,165,203,201,23,240,12,96,1467
+1320 data 173,158,195,240,16,206,158,195,76,149,193,173,1932
+1330 data 158,195,201,148,176,3,238,158,195,169,0,141,1782
+1340 data 159,195,173,158,195,10,46,159,195,24,105,24,1443
+1350 data 141,0,208,173,159,195,105,0,141,16,208,96,1442
+1360 data 169,152,133,251,169,7,133,252,162,23,165,251,1867
+1370 data 24,105,40,133,253,165,252,105,0,133,254,160,1624
+1380 data 39,177,251,145,253,136,16,249,165,251,56,233,1971
+1390 data 40,133,251,176,2,198,252,202,208,220,160,39,1881
+1400 data 169,32,153,40,4,136,16,250,96,162,3,173,1234
+1410 data 27,212,205,162,195,176,15,173,27,212,41,63,1508
+1420 data 201,40,176,6,168,169,81,153,40,4,202,208,1448
+1430 data 230,96,248,24,173,165,195,105,1,141,165,195,1738
+1440 data 173,166,195,105,0,141,166,195,216,32,61,194,1644
+1450 data 238,163,195,173,163,195,41,31,208,22,173,162,1764
+1460 data 195,201,160,176,5,105,16,141,162,195,173,161,1690
+1470 data 195,201,2,240,3,206,161,195,96,162,0,160,1621
+1480 data 7,24,32,240,255,169,5,32,210,255,173,166,1568
+1490 data 195,32,83,194,173,165,195,72,74,74,74,74,1405
+1500 data 9,48,32,210,255,104,41,15,9,48,76,210,1057
+1510 data 255,169,10,141,5,212,169,0,141,6,212,169,1489
+1520 data 8,141,1,212,169,129,141,4,212,162,25,142,1346
+1530 data 32,208,32,86,193,202,208,247,142,32,208,169,1759
+1540 data 128,141,4,212,173,166,195,205,168,195,144,22,1753
+1550 data 208,8,173,165,195,205,167,195,144,12,173,165,1810
+1560 data 195,141,167,195,173,166,195,141,168,195,169,105,2010
+1570 data 160,195,32,186,194,162,100,32,86,193,202,208,1750
+1580 data 250,96,133,251,132,252,160,0,177,251,48,29,1779
+1590 data 170,200,177,251,200,140,164,195,168,24,32,240,1961
+1600 data 255,172,164,195,177,251,240,6,32,210,255,200,2157
+1610 data 208,246,200,208,223,96,5,15,158,68,32,79,1538
+1620 data 32,68,32,71,32,69,0,8,8,5,68,79,472
+1630 data 68,71,69,32,84,72,69,32,70,65,76,76,784
+1640 data 73,78,71,32,82,79,67,75,83,0,11,5,656
+1650 data 155,74,79,89,83,84,73,67,75,32,73,78,962
+1660 data 32,80,79,82,84,32,50,32,79,82,32,90,754
+1670 data 32,65,78,68,32,88,0,14,9,153,70,73,682
+1680 data 82,69,32,79,82,32,83,80,65,67,69,32,772
+1690 data 84,79,32,83,84,65,82,84,0,16,15,153,777
+1700 data 81,32,84,79,32,81,85,73,84,0,19,16,666
+1710 data 5,72,73,0,255,0,1,5,83,67,79,82,722
+1720 data 69,0,0,30,5,72,73,0,255,12,15,150,681
+1730 data 71,65,77,69,32,79,86,69,82,0,255,0,885
+1740 data 24,0,0,60,0,0,60,0,0,126,0,0,270
+1750 data 126,0,0,255,0,1,255,128,3,255,192,7,1222
+1760 data 219,224,15,153,240,31,24,248,60,0,60,48,1322
+1770 data 0,12,0,0,0,0,0,0,0,0,0,0,12
+1780 data -1
+</script>
+
+<h3>How the loader works</h3>
+<p>Lines 100&ndash;160 read the DATA twelve numbers at a time and <code>POKE</code> them into memory from address 49152, keeping a running total in <code>C</code>. The thirteenth number on each line is the total it should be. The last line, <code>DATA -1</code>, marks the end, and line 200 starts the machine code with <code>SYS 49152</code>.</p>
+<p>Why 49152? It is $C000, a 4 KB block of RAM that BASIC never uses, so the loader and the game can be in memory at the same time. The downloadable <code>dodge.prg</code> is the same program assembled to run at 2061, right after its BASIC line.</p>
+
+<h2>Inside the machine code</h2>
+
+<p>The full source is below, with a comment on almost every line. Here are the ideas that make it work.</p>
+
+<h3>A BASIC line in front</h3>
+<p>A C64 program is loaded at 2049 ($0801), where BASIC expects its first line. So the assembler starts the file with one: <code>10 SYS 2061</code>, built byte by byte. 2061 is the address right after that line, where the machine code begins. That is why <span class="cmd">RUN</span> starts a machine-code program.</p>
+<pre class="code">        * = $0801               ; a BASIC line: 10 SYS 2061
+        .word basend, 10
+        .null $9e, format("%d", start)
+basend  .word 0</pre>
+<p><code>$9E</code> is the token for SYS, and the address after it is written in digits, exactly as if you had typed it.</p>
+
+<h3>Fifty times a second</h3>
+<p>The game runs once per frame. <code>$D012</code> is the raster register: the line the VIC-II is drawing right now. The program waits until it reaches line 251, just below the text area, then moves the ship and checks for a hit. Every frame takes exactly 1/50 of a second (PAL), whatever else is going on.</p>
+<pre class="code">waitframe
+-       lda raster              ; still on line 251 from last time?
+        cmp #251
+        beq -
+-       lda raster              ; wait for line 251, below the text
+        cmp #251
+        bne -
+        rts</pre>
+
+<h3>The ship is a sprite</h3>
+<p>A sprite is a 24&times;21 picture the VIC-II draws on its own, on top of the text, anywhere on the screen. Its shape is 63 bytes, three per row; this one lives at 832 ($0340), which is block 13 of 64 bytes, so the sprite pointer at $07F8 is set to 13. Moving it means writing two numbers: Y in $D001 and X in $D000.</p>
+<p>The screen is 320 pixels wide plus a border, so X needs nine bits. The ninth bit lives in $D010. The program keeps the position as 0&ndash;148 in <code>PX</code> and turns it into <em>24 + 2 &times; PX</em>; the doubling shifts the ninth bit into the carry, and from there into $D010:</p>
+<pre class="code">placeship
+        lda #0
+        sta msb
+        lda px
+        asl a                   ; carry = bit 8 of px * 2
+        rol msb
+        clc
+        adc #24
+        sta $d000
+        lda msb
+        adc #0
+        sta $d010
+        rts</pre>
+
+<h3>Joystick and keys</h3>
+<p>The joystick in port 2 is read from $DC00, one bit per direction, and a bit is 0 while the stick is pushed that way: bit 2 is left, bit 3 right, bit 4 the fire button. For players without a joystick, the KERNAL keeps the key being held down in address 203 ($CB): 12 while <kbd>Z</kbd> is down, 23 for <kbd>X</kbd>, 60 for <kbd>SPACE</kbd>, 64 when nothing is pressed.</p>
+
+<h3>Falling rocks: moving the whole screen</h3>
+<p>The rocks are not sprites, just a ball character, screen code 81, the same one the <a href="/2026/11/the-bouncing-ball-animation-with-poke.html">BALL</a> program POKEs. Every few frames the program copies the screen down by one row: row 23 into row 24, then row 22 into 23, and so on up to the top, bottom first so nothing is overwritten before it is copied. Then it empties the top row and drops in new rocks.</p>
+<p>The copy uses the 6502&rsquo;s indirect addressing: <code>LDA (SRC),Y</code> reads from the address held in zero page at <code>SRC</code>, plus Y. Two pointers, one row apart, and a loop of 40 columns:</p>
+<pre class="code">scroll  lda #&lt;(screen+23*40)    ; src: row 23
+        sta src
+        lda #&gt;(screen+23*40)
+        sta src+1
+        ldx #23                 ; 23 rows to copy, bottom first
+sc_row  lda src                 ; dst = src + 40, the row below
+        clc
+        adc #40
+        sta dst
+        lda src+1
+        adc #0
+        sta dst+1
+        ldy #39
+-       lda (src),y
+        sta (dst),y
+        dey
+        bpl -
+        lda src                 ; src one row up
+        sec
+        sbc #40
+        sta src
+        bcs +
+        dec src+1
++       dex
+        bne sc_row
+        ldy #39                 ; empty the top row of the play area
+        lda #32
+-       sta screen+40,y
+        dey</pre>
+<p>That is 920 bytes moved, at about 16 processor cycles each: some 15,000 cycles, comfortably inside the 19,656 of one PAL frame. In BASIC, with <code>PEEK</code> and <code>POKE</code>, the same copy takes a few seconds.</p>
+
+<h3>Random numbers from the sound chip</h3>
+<p>The SID&rsquo;s voice 3 can play noise, and register $D41B shows its output as a number from 0 to 255. Set the noise to its highest frequency and that register becomes a free random number generator. Writing $8F to the volume register keeps voice 3 silent: the 8 in the high nibble turns its sound off while it keeps running.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="DODGE in play: score 23, high score 253, the yellow ship near the bottom and grey rocks above it" height="740" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/dodge/dodge-play.png" style="display:block;width:100%;max-width:976px;height:auto;margin:0 auto;border:3px solid #706deb;" width="976" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Score 23, with plenty of room between the rocks. It gets tighter.</td></tr></tbody></table>
+
+<h3>Hit or miss: the VIC-II decides</h3>
+<p>No coordinates are compared to find out whether a rock hit the ship. While the VIC-II draws the screen, it notices when a pixel of a sprite lands on a pixel of a character, and sets a bit in $D01F: bit 0 for sprite 0. The program simply reads $D01F once a frame. Reading it also clears it, which is why <code>NEWGAME</code> reads it once before play starts. Because the test is pixel by pixel, a rock can pass between the ship&rsquo;s wings without counting.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="GAME OVER: the ship at the bottom left touching a rock, score 161, high score 126" height="542" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/dodge/dodge-over.png" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border:3px solid #706deb;" width="720" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Score 161. The rock at the ship&rsquo;s right wing ended it, and 161 becomes the new high score.</td></tr></tbody></table>
+
+<h3>Counting in decimal</h3>
+<p><code>SED</code> switches the 6502 into decimal mode, where each byte holds two decimal digits (BCD): $99 + 1 gives $00 and a carry, not $9A. The score is two such bytes, 0000 to 9999, and printing it is just a matter of taking each half-byte and adding 48, the code of the digit 0. Comparing two BCD numbers works like ordinary numbers, so the high score check needs nothing special.</p>
+
+<h3>Getting harder</h3>
+<p>Every 32 rows the chance of a rock goes up by 16 (out of 256, three tries per row), and the delay between rows goes down by one frame, from 6 frames to a minimum of 2. That is from about 8 rows a second at the start to 25.</p>
+
+<h3>Help from the KERNAL</h3>
+<p>The text is printed with two routines from the C64&rsquo;s ROM: <code>PLOT</code> at $FFF0 moves the cursor, and <code>CHROUT</code> at $FFD2 prints a character, colour codes included, exactly like <code>PRINT</code> in BASIC. All the texts sit in one table: row, column, then the characters, ending with 0.</p>
+
+<h2>The full source</h2>
+
+<details>
+<summary>dodge.asm, 459 lines (click to open)</summary>
+<pre class="code">; =============================================================
+; DODGE - dodge the falling rocks
+; C64 Coding - c64n.blogspot.com
+;
+; 6502 assembly for 64tass:
+;   64tass -C -a -i dodge.asm -o dodge.prg            (RUN it)
+;   64tass -C -a -i -D LOADER=1 dodge.asm -o dodge-c000.prg
+;                                    (the code at 49152, for the
+;                                     BASIC loader: SYS 49152)
+; =============================================================
+
+        .weak                   ; -D LOADER=1 overrides this
+LOADER  = 0                     ; 0: normal .prg, 1: code at $c000
+        .endweak
+
+; ---- addresses ----------------------------------------------
+screen  = $0400                 ; screen memory, 40 x 25
+colour  = $d800                 ; colour memory
+sprptr  = $07f8                 ; sprite 0 pointer
+sprite  = $0340                 ; sprite 0 shape: 832 = block 13
+raster  = $d012                 ; current raster line (low 8 bits)
+border  = $d020
+backgr  = $d021
+sid     = $d400                 ; first SID register
+joy2    = $dc00                 ; joystick port 2, bits are 0 when pressed
+keyheld = $cb                   ; key held down, 64 = none
+keybuf  = $c6                   ; number of keys in the keyboard buffer
+chrout  = $ffd2                 ; KERNAL: print a character
+plot    = $fff0                 ; KERNAL: move the cursor (carry clear)
+
+src     = $fb                   ; zero page pointers for scrolling
+dst     = $fd
+
+rock    = 81                    ; screen code of a rock: a ball
+k_z     = 12                    ; keyboard matrix codes
+k_x     = 23
+k_space = 60
+k_q     = 62
+
+; ---- start ---------------------------------------------------
+.if LOADER != 0
+        * = $c000               ; typed in with the BASIC loader
+.else
+        * = $0801               ; a BASIC line: 10 SYS 2061
+        .word basend, 10
+        .null $9e, format(&quot;%d&quot;, start)
+basend  .word 0
+.endif
+
+start   jsr setup
+title   jsr showtitle
+        jsr waitstart           ; carry set: Q was pressed
+        bcs quit
+        jsr newgame
+
+; ---- the game loop: once per frame ----------------------------
+loop    jsr waitframe           ; 50 times a second (PAL)
+        jsr move                ; joystick or Z/X
+        lda $d01f               ; sprite-background collision
+        and #1                  ; did sprite 0 touch a rock?
+        bne crash
+        dec timer               ; time to scroll?
+        bne loop
+        lda delay
+        sta timer
+        jsr scroll              ; everything moves down one row
+        jsr addrocks            ; new rocks on the top row
+        jsr addscore            ; one point per row
+        jmp loop
+
+crash   jsr gameover
+        jmp title
+
+quit    lda #0
+        sta $d015               ; sprite off
+        sta sid+24              ; sound off
+        sta keybuf              ; forget the keys pressed in the game
+        lda #14
+        sta border              ; the usual colours
+        sta $0286               ; light blue text
+        lda #6
+        sta backgr
+        lda #147                ; clear the screen
+        jmp chrout              ; ...and its RTS goes back to BASIC
+
+; ---- setup: once -----------------------------------------------
+setup   lda #0
+        sta border
+        sta backgr
+        sta $d017               ; sprite 0: normal size,
+        sta $d01d
+        sta $d01c               ; one colour,
+        sta $d01b               ; in front of the text
+        sta hi
+        sta hi+1
+        ldx #62                 ; empty the sprite block...
+-       sta sprite,x
+        dex
+        bpl -
+        ldx #shipend-ship-1     ; ...and copy the ship into it
+-       lda ship,x
+        sta sprite,x
+        dex
+        bpl -
+        lda #sprite/64
+        sta sprptr
+        lda #7                  ; yellow ship
+        sta $d027
+        lda #218                ; near the bottom of the screen
+        sta $d001
+        ldx #24                 ; silence the SID
+        lda #0
+-       sta sid,x
+        dex
+        bpl -
+        lda #$ff                ; voice 3: noise at top speed,
+        sta sid+14              ; a source of random numbers
+        sta sid+15
+        lda #$80
+        sta sid+18
+        lda #$8f                ; volume 15, voice 3 not heard
+        sta sid+24
+        rts
+
+; ---- title screen ----------------------------------------------
+showtitle
+        lda #0
+        sta $d015               ; hide the ship
+        lda #147
+        jsr chrout
+        lda #&lt;titletxt
+        ldy #&gt;titletxt
+        jsr texts
+        ldx #19                 ; the high score
+        ldy #19
+        clc
+        jsr plot
+        lda hi+1
+        jsr putbcd
+        lda hi
+        jmp putbcd
+
+; wait for fire or space (carry clear) or Q (carry set)
+waitstart
+-       lda joy2                ; first wait until everything is let go
+        and #$10
+        beq -
+        lda keyheld
+        cmp #64
+        bne -
+-       lda keyheld
+        cmp #k_q
+        beq wsquit
+        cmp #k_space
+        beq wsgo
+        lda joy2
+        and #$10                ; fire button
+        bne -
+wsgo    clc
+        rts
+wsquit  sec
+        rts
+
+; ---- new game ----------------------------------------------------
+newgame lda #147
+        jsr chrout
+        ldx #0                  ; colour memory: light grey rocks
+        lda #15
+-       sta colour,x
+        sta colour+$100,x
+        sta colour+$200,x
+        sta colour+$2e8,x
+        inx
+        bne -
+        lda #&lt;gametxt
+        ldy #&gt;gametxt
+        jsr texts
+        ldx #0                  ; high score on the top line
+        ldy #33
+        clc
+        jsr plot
+        lda hi+1
+        jsr putbcd
+        lda hi
+        jsr putbcd
+        lda #0
+        sta score
+        sta score+1
+        sta rows
+        jsr showscore
+        lda #74                 ; the ship in the middle
+        sta px
+        jsr placeship
+        lda #6                  ; 6 frames per row to start with
+        sta delay
+        sta timer
+        lda #48                 ; chance of a rock, out of 256
+        sta density
+        lda #1
+        sta $d015               ; ship on
+        jsr waitframe
+        lda $d01f               ; reading it clears old collisions
+        rts
+
+; ---- wait for the next frame ---------------------------------------
+waitframe
+-       lda raster              ; still on line 251 from last time?
+        cmp #251
+        beq -
+-       lda raster              ; wait for line 251, below the text
+        cmp #251
+        bne -
+        rts
+
+; ---- move the ship -------------------------------------------------
+move    lda joy2
+        and #4                  ; joystick left
+        beq left
+        lda keyheld
+        cmp #k_z
+        beq left
+        lda joy2
+        and #8                  ; joystick right
+        beq right
+        lda keyheld
+        cmp #k_x
+        beq right
+        rts
+left    lda px
+        beq placeship           ; already at the left edge
+        dec px
+        jmp placeship
+right   lda px
+        cmp #148                ; right edge
+        bcs placeship
+        inc px
+
+; sprite x = 24 + 2 * px: nine bits, the ninth in $d010
+placeship
+        lda #0
+        sta msb
+        lda px
+        asl a                   ; carry = bit 8 of px * 2
+        rol msb
+        clc
+        adc #24
+        sta $d000
+        lda msb
+        adc #0
+        sta $d010
+        rts
+
+; ---- scroll rows 1-23 down to rows 2-24 ----------------------------
+scroll  lda #&lt;(screen+23*40)    ; src: row 23
+        sta src
+        lda #&gt;(screen+23*40)
+        sta src+1
+        ldx #23                 ; 23 rows to copy, bottom first
+sc_row  lda src                 ; dst = src + 40, the row below
+        clc
+        adc #40
+        sta dst
+        lda src+1
+        adc #0
+        sta dst+1
+        ldy #39
+-       lda (src),y
+        sta (dst),y
+        dey
+        bpl -
+        lda src                 ; src one row up
+        sec
+        sbc #40
+        sta src
+        bcs +
+        dec src+1
++       dex
+        bne sc_row
+        ldy #39                 ; empty the top row of the play area
+        lda #32
+-       sta screen+40,y
+        dey
+        bpl -
+        rts
+
+; ---- new rocks: three tries per row --------------------------------
+addrocks
+        ldx #3
+-       lda sid+27              ; a random number from voice 3
+        cmp density
+        bcs +                   ; no rock this time
+        lda sid+27
+        and #63                 ; a column 0-63...
+        cmp #40                 ; ...and only 0-39 count
+        bcs +
+        tay
+        lda #rock
+        sta screen+40,y
++       dex
+        bne -
+        rts
+
+; ---- score: one point per row, faster every 32 rows ----------------
+addscore
+        sed                     ; decimal mode: 0099 + 1 = 0100
+        clc
+        lda score
+        adc #1
+        sta score
+        lda score+1
+        adc #0
+        sta score+1
+        cld
+        jsr showscore
+        inc rows
+        lda rows
+        and #31
+        bne asdone
+        lda density             ; more rocks...
+        cmp #160
+        bcs +
+        adc #16
+        sta density
++       lda delay               ; ...and faster, down to 2 frames a row
+        cmp #2
+        beq asdone
+        dec delay
+asdone  rts
+
+showscore
+        ldx #0
+        ldy #7
+        clc
+        jsr plot
+        lda #5                  ; white
+        jsr chrout
+        lda score+1
+        jsr putbcd
+        lda score
+        ; fall through
+
+; print a byte of BCD as two digits
+putbcd  pha
+        lsr a
+        lsr a
+        lsr a
+        lsr a
+        ora #$30                ; &quot;0&quot; + high digit
+        jsr chrout
+        pla
+        and #$0f
+        ora #$30                ; &quot;0&quot; + low digit
+        jmp chrout
+
+; ---- game over ------------------------------------------------------
+gameover
+        lda #$0a                ; voice 1: a burst of noise
+        sta sid+5               ; attack 0, decay 10
+        lda #0
+        sta sid+6
+        lda #8
+        sta sid+1
+        lda #$81                ; noise, gate on
+        sta sid+4
+        ldx #25                 ; flash the border for half a second
+-       stx border
+        jsr waitframe
+        dex
+        bne -
+        stx border              ; x = 0: black again
+        lda #$80                ; gate off
+        sta sid+4
+        lda score+1             ; a new high score?
+        cmp hi+1
+        bcc gonohi
+        bne gohi
+        lda score
+        cmp hi
+        bcc gonohi
+gohi    lda score
+        sta hi
+        lda score+1
+        sta hi+1
+gonohi  lda #&lt;overtxt
+        ldy #&gt;overtxt
+        jsr texts
+        ldx #100                ; two seconds
+-       jsr waitframe
+        dex
+        bne -
+        rts
+
+; ---- print a table of texts: row, column, text, 0 ... $ff ----------
+texts   sta src
+        sty src+1
+        ldy #0
+tx_next lda (src),y             ; row
+        bmi tx_done             ; $ff ends the table
+        tax
+        iny
+        lda (src),y             ; column
+        iny
+        sty tmp
+        tay
+        clc
+        jsr plot
+        ldy tmp
+-       lda (src),y             ; the text, up to a 0
+        beq +
+        jsr chrout
+        iny
+        bne -
++       iny
+        bne tx_next
+tx_done rts
+
+; ---- texts: colour code first; lower case here, capitals on screen (-a) ----
+titletxt
+        .byte 5, 15, 158
+        .text &quot;d o d g e&quot;, 0
+        .byte 8, 8, 5
+        .text &quot;dodge the falling rocks&quot;, 0
+        .byte 11, 5, 155
+        .text &quot;joystick in port 2 or z and x&quot;, 0
+        .byte 14, 9, 153
+        .text &quot;fire or space to start&quot;, 0
+        .byte 16, 15, 153
+        .text &quot;q to quit&quot;, 0
+        .byte 19, 16, 5
+        .text &quot;hi&quot;, 0
+        .byte $ff
+gametxt .byte 0, 1, 5
+        .text &quot;score&quot;, 0
+        .byte 0, 30, 5
+        .text &quot;hi&quot;, 0
+        .byte $ff
+overtxt .byte 12, 15, 150
+        .text &quot;game over&quot;, 0
+        .byte $ff
+
+; ---- the ship: 24 x 21 pixels, 3 bytes a row ------------------------
+ship    .byte $00,$18,$00, $00,$3c,$00, $00,$3c,$00, $00,$7e,$00
+        .byte $00,$7e,$00, $00,$ff,$00, $01,$ff,$80, $03,$ff,$c0
+        .byte $07,$db,$e0, $0f,$99,$f0, $1f,$18,$f8, $3c,$00,$3c
+        .byte $30,$00,$0c       ; 13 rows; the other 8 stay empty
+shipend
+
+; ---- variables: after the code, not part of the file -----------------
+        .virtual *
+px      .byte ?                 ; ship position, 0-148
+msb     .byte ?
+timer   .byte ?                 ; frames until the next row
+delay   .byte ?                 ; frames per row
+density .byte ?                 ; chance of a rock
+rows    .byte ?                 ; rows survived, for the speed-up
+tmp     .byte ?
+score   .word ?                 ; BCD, 0000-9999
+hi      .word ?
+        .endv
+</pre>
+</details>
+
+<h2>Assembling it yourself</h2>
+<p>The source is written for <a href="https://sourceforge.net/projects/tass64/" rel="noopener">64tass</a>, a free cross-assembler that runs on Windows, macOS and Linux:</p>
+<pre class="code">64tass -C -a -i dodge.asm -o dodge.prg                  (starts at 2061)
+64tass -C -a -i -D LOADER=1 dodge.asm -o dodge-c000.prg  (starts at 49152)
+python make_loader.py dodge-c000.prg DODGE.bas</pre>
+<p>The second line builds the version at 49152, and the small script <code>make_loader.py</code> turns it into the DATA lines of the loader. In <a href="/p/the-lab.html">the Lab</a>, <code>Ctrl+Shift+B</code> now assembles <code>.asm</code> files as well as BASIC: put <code>64tass.exe</code> in the lab&rsquo;s <code>tools</code> folder, and errors show up in VS Code at the right line.</p>
+
+<h2>Try this</h2>
+<ul>
+  <li><strong>Another rock:</strong> change <code>rock = 81</code> to 42 for asterisks, or 90 for diamonds.</li>
+  <li><strong>A faster ship:</strong> in <code>left</code> and <code>right</code>, move <code>PX</code> by 2 instead of 1.</li>
+  <li><strong>Harder from the start:</strong> in <code>newgame</code>, start <code>delay</code> at 4 and <code>density</code> at 96.</li>
+  <li><strong>A second player:</strong> sprite 1, the joystick in port 1 at $DC01, and bit 1 of $D01F.</li>
+</ul>
+
+<!-- VIDEO: new YouTube embed goes here -->
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><a href="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/dodge/dodge-lab.png"><img alt="VS Code with dodge.asm open next to VICE" height="772" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/dodge/dodge-lab.png" style="display:block;width:100%;height:auto;margin:0 auto;border:3px solid #706deb;" width="1725" /></a></td></tr><tr><td class="tr-caption" style="text-align:center;">In the lab: dodge.asm in VS Code.</td></tr></tbody></table>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><a href="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/dodge/dodge-loader-lab.png"><img alt="VS Code with the DODGE.bas loader open, and VICE listing the last DATA lines" height="722" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/dodge/dodge-loader-lab.png" style="display:block;width:100%;height:auto;margin:0 auto;border:3px solid #706deb;" width="1687" /></a></td></tr><tr><td class="tr-caption" style="text-align:center;">The loader in the lab: the last DATA lines in VS Code and on the C64.</td></tr></tbody></table>
+
+<h2>Files</h2>
+<p>Source, loader and ready-made program are on <a href="https://github.com/c64n/c64-coding/tree/main/listings/dodge" rel="noopener">GitHub</a>.</p>

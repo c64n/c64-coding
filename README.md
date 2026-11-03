@@ -27,7 +27,8 @@ This repository holds everything behind the site: the listings, the ready-to-run
 4    "BALL"             PRG
 7    "QUADRATIC"        PRG
 13   "CLOCK"            PRG
-633 BLOCKS FREE.
+4    "DODGE"            PRG
+629 BLOCKS FREE.
 READY.
 ```
 
@@ -37,6 +38,7 @@ READY.
 | 4 | [BALL](listings/ball) | A ball bouncing round the screen: new colour, a SID note and a count on every bounce | Graphics | [read](https://c64n.blogspot.com/2026/11/the-bouncing-ball-animation-with-poke.html) |
 | 7 | [QUADRATIC](listings/quadratic) | Solves ax²+bx+c=0 (real, double, complex or linear) and checks the answer | Maths | [read](https://c64n.blogspot.com/2026/11/quadratic-equations.html) |
 | 13 | [CLOCK](listings/clock) | A digital clock with big digits, a blinking colon and an alarm | Utilities | [read](https://c64n.blogspot.com/2026/11/digital-clock.html) |
+| 4 | [DODGE](listings/dodge) | A small game in 6502 assembly: dodge the falling rocks. With a BASIC DATA loader to type in | Games | [read](https://c64n.blogspot.com/2026/11/dodge.html) |
 
 ## RUN
 
