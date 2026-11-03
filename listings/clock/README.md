@@ -2,6 +2,8 @@
 
 A digital clock for the Commodore 64: big digits made of reverse-video blocks, a colon that blinks every second, and an alarm that beeps and flashes until you press a key. The time itself comes from `TI$`, the clock the C64 keeps by itself.
 
+![The clock in VICE: the minute turns and the alarm goes off](clock.gif)
+
 | | |
 |---|---|
 | Category | Utilities |
@@ -15,6 +17,8 @@ A digital clock for the Commodore 64: big digits made of reverse-video blocks, a
 
 - [`CLOCK.bas`](CLOCK.bas) – the listing, with a remark on most lines. Type every letter without SHIFT; the remarks after `:rem` can be left out.
 - [`CLOCK.prg`](CLOCK.prg) – ready to run: drag it onto a VICE window.
+- [`clock.gif`](clock.gif), [`clock-demo.mp4`](clock-demo.mp4) – recorded in VICE, with sound in the MP4.
+- [`clock-setup.png`](clock-setup.png), [`clock-run.png`](clock-run.png), [`clock-alarm.png`](clock-alarm.png), [`clock-lab.png`](clock-lab.png) – screenshots from VICE and the lab.
 
 ## How it is built
 

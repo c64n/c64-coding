@@ -18,7 +18,7 @@
 
 <p>Tell the C64 what time it is, and it keeps the time on its own, in big digits across the middle of the screen, with a colon that blinks every second. Set an alarm and at the right minute it beeps and flashes until you press a key. The clock itself is one line of BASIC: everything else is about drawing big numbers quickly.</p>
 
-<!-- IMAGE: clock-run.png goes here -->
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="Animation: big cyan digits count from 14:05:59 to 14:06:06 on a black screen, the colon blinks, and a red WAKE UP! message flashes" height="404" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/clock/clock.gif" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto;border:3px solid #706deb;" width="640" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Recorded in VICE: the minute turns, the alarm goes off, and the colon blinks once a second.</td></tr></tbody></table>
 
 <!--more-->
 
@@ -126,6 +126,8 @@
 <p>The C64 has a clock built in. Sixty times a second an interrupt adds one to <code>TI</code>, the jiffy counter, whatever your program is doing. <code>TI$</code> shows the same count as a time of day, six digits <em>hhmmss</em>, and unlike <code>TI</code> you can set it: <code>TI$="073000"</code> means half past seven. From then on the C64 counts by itself, and at 23:59:59 it rolls over to 000000 on its own. So the program never adds seconds: it only reads <code>TI$</code> and draws it.</p>
 <p>Two things stop the count: anything that switches the interrupt off, like loading from tape or disk, and switching the machine off. A clock in BASIC is as accurate as the interrupt, which is good enough for a desk and not for a railway.</p>
 
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="The CLOCK setup screen: hours 14, minutes 05, seconds 40, alarm 14:06, with a block cursor after the last answer" height="830" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/clock/clock-setup.png" style="display:block;width:100%;max-width:1104px;height:auto;margin:0 auto;border:3px solid #706deb;" width="1104" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Setting the clock and the alarm. The block after 06 is the program&rsquo;s own cursor.</td></tr></tbody></table>
+
 <h3>Lines 850&ndash;885: our own INPUT</h3>
 <p>The program does not use <code>INPUT</code> to ask for the time. It reads the keys one by one with <code>GET</code>, in a small subroutine of its own:</p>
 <ul>
@@ -150,12 +152,16 @@
 0 0 1</pre></div>
 <p>The subroutine turns each grid into one string that draws the whole digit: a block is <code>BK$</code>, a reversed space, and after each row <code>NL$</code> moves the cursor one row down and three columns back. It is the same trick as the dice in <a href="/2026/11/zaria-three-dice-on-commodore-64.html">ZARIA</a>: build once, print many times. Every grid writes all fifteen cells, spaces included, so a new digit always covers the old one completely.</p>
 
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="The clock showing 14 05 45 in big cyan digits, ALARM 14:06 below and Q TO QUIT" height="832" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/clock/clock-run.png" style="display:block;width:100%;max-width:1097px;height:auto;margin:0 auto;border:3px solid #706deb;" width="1097" /></td></tr><tr><td class="tr-caption" style="text-align:center;">14:05:45, on an odd second, so the colon is off.</td></tr></tbody></table>
+
 <h3>Lines 510&ndash;560: redraw only what changed</h3>
 <p>The main loop reads <code>TI$</code> and goes straight back to the start until it is different from <code>O$</code>, the time on the screen. When a new second arrives, it compares the two strings digit by digit and redraws only the digits that changed. Most seconds that is one digit; when 09:59:59 turns into 10:00:00, it is all six. Drawing less means the screen is never caught half-drawn.</p>
 <p><code>O$</code> starts as <code>"------"</code>, which matches no digit, so the first pass draws all six.</p>
 
 <h3>Lines 570&ndash;585: the blinking colon</h3>
 <p><code>VAL(RIGHT$(T$,1)) AND 1</code> is 0 when the last digit of the seconds is even and 1 when it is odd. So the colon is a block on even seconds and a space on odd ones, and it blinks once a second without a counter of its own.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="The clock showing 14:06:06 with a red WAKE UP! message between two red blocks" height="832" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/clock/clock-alarm.png" style="display:block;width:100%;max-width:1099px;height:auto;margin:0 auto;border:3px solid #706deb;" width="1099" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Six seconds after the alarm: still ringing, until a key is pressed.</td></tr></tbody></table>
 
 <h3>Lines 590&ndash;660: the alarm</h3>
 <p><code>AL$</code> holds the alarm as <em>hhmm</em>. When the first four digits of the time match it, the alarm starts ringing and <code>AL$</code> is emptied, so it rings only once. Every second while it rings, line 630 closes and reopens the gate of voice 1 for a short beep (decay 9, no sustain, so each beep fades on its own), and line 640 flashes &ldquo;WAKE UP!&rdquo; in red, with marks that blink with the colon. Any key stops it.</p>
@@ -193,3 +199,5 @@
 <p>Press <span class="cmd">&darr; .PRG</span> on the listing and drop the file on a VICE window. Source and program are also on <a href="https://github.com/c64n/c64-coding/tree/main/listings/clock" rel="noopener">GitHub</a>.</p>
 
 <!-- VIDEO: new YouTube embed goes here -->
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><a href="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/clock/clock-lab.png"><img alt="VS Code with CLOCK.bas open next to VICE listing the program" height="772" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/clock/clock-lab.png" style="display:block;width:100%;height:auto;margin:0 auto;border:3px solid #706deb;" width="1626" /></a></td></tr><tr><td class="tr-caption" style="text-align:center;">In the lab: CLOCK.bas in VS Code, and the same lines listed on the C64.</td></tr></tbody></table>
