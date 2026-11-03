@@ -9,6 +9,7 @@ A small game in 6502 assembly: steer a ship along the bottom of the screen and d
 | Category | Games |
 | Language | 6502 assembly (64tass) |
 | Size | 938 bytes, 4 blocks (`dodge.prg`) |
+| Video | [YouTube](https://youtu.be/oTj93XUV34o) |
 | Article | [DODGE: A Game in 6502 Assembly](https://c64n.blogspot.com/2026/11/dodge.html) |
 | Controls | Joystick in port 2, or <kbd>Z</kbd> / <kbd>X</kbd>; fire or <kbd>SPACE</kbd> to start; <kbd>Q</kbd> on the title screen to quit |
 
