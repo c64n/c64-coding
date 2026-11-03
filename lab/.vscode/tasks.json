@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "C64: Build and Run current BASIC listing",
+      "label": "C64: Build and Run current listing (.bas or .asm)",
       "type": "shell",
       "command": "${workspaceFolder}\\run-c64.bat",
       "args": [

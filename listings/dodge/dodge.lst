@@ -1,0 +1,411 @@
+
+; 64tass Turbo Assembler Macro V1.59.3120 listing file
+; 64tass -C -a -i -o dodge.prg -L dodge.lst dodge.asm
+; Tue Nov  3 19:05:31 2026
+
+;Offset	;Hex		;Monitor	;Source
+
+;******  Processing input file: dodge.asm
+
+=$0400					screen  = $0400                 ; screen memory, 40 x 25
+=$d800					colour  = $d800                 ; colour memory
+=$07f8					sprptr  = $07f8                 ; sprite 0 pointer
+=$0340					sprite  = $0340                 ; sprite 0 shape: 832 = block 13
+=$d012					raster  = $d012                 ; current raster line (low 8 bits)
+=$d020					border  = $d020
+=$d021					backgr  = $d021
+=$d400					sid     = $d400                 ; first SID register
+=$dc00					joy2    = $dc00                 ; joystick port 2, bits are 0 when pressed
+=$cb					keyheld = $cb                   ; key held down, 64 = none
+=$c6					keybuf  = $c6                   ; number of keys in the keyboard buffer
+=$ffd2					chrout  = $ffd2                 ; KERNAL: print a character
+=$fff0					plot    = $fff0                 ; KERNAL: move the cursor (carry clear)
+=$fb					src     = $fb                   ; zero page pointers for scrolling
+=$fd					dst     = $fd
+=81					rock    = 81                    ; screen code of a rock: a ball
+=12					k_z     = 12                    ; keyboard matrix codes
+=23					k_x     = 23
+=60					k_space = 60
+=62					k_q     = 62
+>0801	0b 08 0a 00			        .word basend, 10
+>0805	9e 32 30 36 31 00		        .null $9e, format("%d", start)
+>080b	00 00				basend  .word 0
+.080d	20 61 08	jsr $0861	start   jsr setup
+.0810	20 b2 08	jsr $08b2	title   jsr showtitle
+.0813	20 d7 08	jsr $08d7	        jsr waitstart           ; carry set: Q was pressed
+.0816	b0 2d		bcs $0845	        bcs quit
+.0818	20 f9 08	jsr $08f9	        jsr newgame
+.081b	20 5b 09	jsr $095b	loop    jsr waitframe           ; 50 times a second (PAL)
+.081e	20 6a 09	jsr $096a	        jsr move                ; joystick or Z/X
+.0821	ad 1f d0	lda $d01f	        lda $d01f               ; sprite-background collision
+.0824	29 01		and #$01	        and #1                  ; did sprite 0 touch a rock?
+.0826	d0 17		bne $083f	        bne crash
+.0828	ce bd 0b	dec $0bbd	        dec timer               ; time to scroll?
+.082b	d0 ee		bne $081b	        bne loop
+.082d	ad be 0b	lda $0bbe	        lda delay
+.0830	8d bd 0b	sta $0bbd	        sta timer
+.0833	20 b5 09	jsr $09b5	        jsr scroll              ; everything moves down one row
+.0836	20 ee 09	jsr $09ee	        jsr addrocks            ; new rocks on the top row
+.0839	20 0b 0a	jsr $0a0b	        jsr addscore            ; one point per row
+.083c	4c 1b 08	jmp $081b	        jmp loop
+.083f	20 6a 0a	jsr $0a6a	crash   jsr gameover
+.0842	4c 10 08	jmp $0810	        jmp title
+.0845	a9 00		lda #$00	quit    lda #0
+.0847	8d 15 d0	sta $d015	        sta $d015               ; sprite off
+.084a	8d 18 d4	sta $d418	        sta sid+24              ; sound off
+.084d	85 c6		sta $c6		        sta keybuf              ; forget the keys pressed in the game
+.084f	a9 0e		lda #$0e	        lda #14
+.0851	8d 20 d0	sta $d020	        sta border              ; the usual colours
+.0854	8d 86 02	sta $0286	        sta $0286               ; light blue text
+.0857	a9 06		lda #$06	        lda #6
+.0859	8d 21 d0	sta $d021	        sta backgr
+.085c	a9 93		lda #$93	        lda #147                ; clear the screen
+.085e	4c d2 ff	jmp $ffd2	        jmp chrout              ; ...and its RTS goes back to BASIC
+.0861	a9 00		lda #$00	setup   lda #0
+.0863	8d 20 d0	sta $d020	        sta border
+.0866	8d 21 d0	sta $d021	        sta backgr
+.0869	8d 17 d0	sta $d017	        sta $d017               ; sprite 0: normal size,
+.086c	8d 1d d0	sta $d01d	        sta $d01d
+.086f	8d 1c d0	sta $d01c	        sta $d01c               ; one colour,
+.0872	8d 1b d0	sta $d01b	        sta $d01b               ; in front of the text
+.0875	8d c4 0b	sta $0bc4	        sta hi
+.0878	8d c5 0b	sta $0bc5	        sta hi+1
+.087b	a2 3e		ldx #$3e	        ldx #62                 ; copy the ship into the sprite block
+.087d	bd 7c 0b	lda $0b7c,x	-       lda ship,x
+.0880	9d 40 03	sta $0340,x	        sta sprite,x
+.0883	ca		dex		        dex
+.0884	10 f7		bpl $087d	        bpl -
+.0886	a9 0d		lda #$0d	        lda #sprite/64
+.0888	8d f8 07	sta $07f8	        sta sprptr
+.088b	a9 07		lda #$07	        lda #7                  ; yellow ship
+.088d	8d 27 d0	sta $d027	        sta $d027
+.0890	a9 da		lda #$da	        lda #218                ; near the bottom of the screen
+.0892	8d 01 d0	sta $d001	        sta $d001
+.0895	a2 18		ldx #$18	        ldx #24                 ; silence the SID
+.0897	a9 00		lda #$00	        lda #0
+.0899	9d 00 d4	sta $d400,x	-       sta sid,x
+.089c	ca		dex		        dex
+.089d	10 fa		bpl $0899	        bpl -
+.089f	a9 ff		lda #$ff	        lda #$ff                ; voice 3: noise at top speed,
+.08a1	8d 0e d4	sta $d40e	        sta sid+14              ; a source of random numbers
+.08a4	8d 0f d4	sta $d40f	        sta sid+15
+.08a7	a9 80		lda #$80	        lda #$80
+.08a9	8d 12 d4	sta $d412	        sta sid+18
+.08ac	a9 8f		lda #$8f	        lda #$8f                ; volume 15, voice 3 not heard
+.08ae	8d 18 d4	sta $d418	        sta sid+24
+.08b1	60		rts		        rts
+.08b2					showtitle
+.08b2	a9 00		lda #$00	        lda #0
+.08b4	8d 15 d0	sta $d015	        sta $d015               ; hide the ship
+.08b7	a9 93		lda #$93	        lda #147
+.08b9	20 d2 ff	jsr $ffd2	        jsr chrout
+.08bc	a9 e7		lda #$e7	        lda #<titletxt
+.08be	a0 0a		ldy #$0a	        ldy #>titletxt
+.08c0	20 bf 0a	jsr $0abf	        jsr texts
+.08c3	a2 13		ldx #$13	        ldx #19                 ; the high score
+.08c5	a0 13		ldy #$13	        ldy #19
+.08c7	18		clc		        clc
+.08c8	20 f0 ff	jsr $fff0	        jsr plot
+.08cb	ad c5 0b	lda $0bc5	        lda hi+1
+.08ce	20 58 0a	jsr $0a58	        jsr putbcd
+.08d1	ad c4 0b	lda $0bc4	        lda hi
+.08d4	4c 58 0a	jmp $0a58	        jmp putbcd
+.08d7					waitstart
+.08d7	ad 00 dc	lda $dc00	-       lda joy2                ; first wait until everything is let go
+.08da	29 10		and #$10	        and #$10
+.08dc	f0 f9		beq $08d7	        beq -
+.08de	a5 cb		lda $cb		        lda keyheld
+.08e0	c9 40		cmp #$40	        cmp #64
+.08e2	d0 f3		bne $08d7	        bne -
+.08e4	a5 cb		lda $cb		-       lda keyheld
+.08e6	c9 3e		cmp #$3e	        cmp #k_q
+.08e8	f0 0d		beq $08f7	        beq wsquit
+.08ea	c9 3c		cmp #$3c	        cmp #k_space
+.08ec	f0 07		beq $08f5	        beq wsgo
+.08ee	ad 00 dc	lda $dc00	        lda joy2
+.08f1	29 10		and #$10	        and #$10                ; fire button
+.08f3	d0 ef		bne $08e4	        bne -
+.08f5	18		clc		wsgo    clc
+.08f6	60		rts		        rts
+.08f7	38		sec		wsquit  sec
+.08f8	60		rts		        rts
+.08f9	a9 93		lda #$93	newgame lda #147
+.08fb	20 d2 ff	jsr $ffd2	        jsr chrout
+.08fe	a2 00		ldx #$00	        ldx #0                  ; colour memory: light grey rocks
+.0900	a9 0f		lda #$0f	        lda #15
+.0902	9d 00 d8	sta $d800,x	-       sta colour,x
+.0905	9d 00 d9	sta $d900,x	        sta colour+$100,x
+.0908	9d 00 da	sta $da00,x	        sta colour+$200,x
+.090b	9d e8 da	sta $dae8,x	        sta colour+$2e8,x
+.090e	e8		inx		        inx
+.090f	d0 f1		bne $0902	        bne -
+.0911	a9 5e		lda #$5e	        lda #<gametxt
+.0913	a0 0b		ldy #$0b	        ldy #>gametxt
+.0915	20 bf 0a	jsr $0abf	        jsr texts
+.0918	a2 00		ldx #$00	        ldx #0                  ; high score on the top line
+.091a	a0 21		ldy #$21	        ldy #33
+.091c	18		clc		        clc
+.091d	20 f0 ff	jsr $fff0	        jsr plot
+.0920	ad c5 0b	lda $0bc5	        lda hi+1
+.0923	20 58 0a	jsr $0a58	        jsr putbcd
+.0926	ad c4 0b	lda $0bc4	        lda hi
+.0929	20 58 0a	jsr $0a58	        jsr putbcd
+.092c	a9 00		lda #$00	        lda #0
+.092e	8d c2 0b	sta $0bc2	        sta score
+.0931	8d c3 0b	sta $0bc3	        sta score+1
+.0934	8d c0 0b	sta $0bc0	        sta rows
+.0937	20 42 0a	jsr $0a42	        jsr showscore
+.093a	a9 4a		lda #$4a	        lda #74                 ; the ship in the middle
+.093c	8d bb 0b	sta $0bbb	        sta px
+.093f	20 9a 09	jsr $099a	        jsr placeship
+.0942	a9 06		lda #$06	        lda #6                  ; 6 frames per row to start with
+.0944	8d be 0b	sta $0bbe	        sta delay
+.0947	8d bd 0b	sta $0bbd	        sta timer
+.094a	a9 30		lda #$30	        lda #48                 ; chance of a rock, out of 256
+.094c	8d bf 0b	sta $0bbf	        sta density
+.094f	a9 01		lda #$01	        lda #1
+.0951	8d 15 d0	sta $d015	        sta $d015               ; ship on
+.0954	20 5b 09	jsr $095b	        jsr waitframe
+.0957	ad 1f d0	lda $d01f	        lda $d01f               ; reading it clears old collisions
+.095a	60		rts		        rts
+.095b					waitframe
+.095b	ad 12 d0	lda $d012	-       lda raster              ; still on line 251 from last time?
+.095e	c9 fb		cmp #$fb	        cmp #251
+.0960	f0 f9		beq $095b	        beq -
+.0962	ad 12 d0	lda $d012	-       lda raster              ; wait for line 251, below the text
+.0965	c9 fb		cmp #$fb	        cmp #251
+.0967	d0 f9		bne $0962	        bne -
+.0969	60		rts		        rts
+.096a	ad 00 dc	lda $dc00	move    lda joy2
+.096d	29 04		and #$04	        and #4                  ; joystick left
+.096f	f0 14		beq $0985	        beq left
+.0971	a5 cb		lda $cb		        lda keyheld
+.0973	c9 0c		cmp #$0c	        cmp #k_z
+.0975	f0 0e		beq $0985	        beq left
+.0977	ad 00 dc	lda $dc00	        lda joy2
+.097a	29 08		and #$08	        and #8                  ; joystick right
+.097c	f0 12		beq $0990	        beq right
+.097e	a5 cb		lda $cb		        lda keyheld
+.0980	c9 17		cmp #$17	        cmp #k_x
+.0982	f0 0c		beq $0990	        beq right
+.0984	60		rts		        rts
+.0985	ad bb 0b	lda $0bbb	left    lda px
+.0988	f0 10		beq $099a	        beq placeship           ; already at the left edge
+.098a	ce bb 0b	dec $0bbb	        dec px
+.098d	4c 9a 09	jmp $099a	        jmp placeship
+.0990	ad bb 0b	lda $0bbb	right   lda px
+.0993	c9 94		cmp #$94	        cmp #148                ; right edge
+.0995	b0 03		bcs $099a	        bcs placeship
+.0997	ee bb 0b	inc $0bbb	        inc px
+.099a					placeship
+.099a	a9 00		lda #$00	        lda #0
+.099c	8d bc 0b	sta $0bbc	        sta msb
+.099f	ad bb 0b	lda $0bbb	        lda px
+.09a2	0a		asl a		        asl                     ; carry = bit 8 of px * 2
+.09a3	2e bc 0b	rol $0bbc	        rol msb
+.09a6	18		clc		        clc
+.09a7	69 18		adc #$18	        adc #24
+.09a9	8d 00 d0	sta $d000	        sta $d000
+.09ac	ad bc 0b	lda $0bbc	        lda msb
+.09af	69 00		adc #$00	        adc #0
+.09b1	8d 10 d0	sta $d010	        sta $d010
+.09b4	60		rts		        rts
+.09b5	a9 98		lda #$98	scroll  lda #<(screen+23*40)    ; src: row 23
+.09b7	85 fb		sta $fb		        sta src
+.09b9	a9 07		lda #$07	        lda #>(screen+23*40)
+.09bb	85 fc		sta $fc		        sta src+1
+.09bd	a2 17		ldx #$17	        ldx #23                 ; 23 rows to copy, bottom first
+.09bf	a5 fb		lda $fb		sc_row  lda src                 ; dst = src + 40, the row below
+.09c1	18		clc		        clc
+.09c2	69 28		adc #$28	        adc #40
+.09c4	85 fd		sta $fd		        sta dst
+.09c6	a5 fc		lda $fc		        lda src+1
+.09c8	69 00		adc #$00	        adc #0
+.09ca	85 fe		sta $fe		        sta dst+1
+.09cc	a0 27		ldy #$27	        ldy #39
+.09ce	b1 fb		lda ($fb),y	-       lda (src),y
+.09d0	91 fd		sta ($fd),y	        sta (dst),y
+.09d2	88		dey		        dey
+.09d3	10 f9		bpl $09ce	        bpl -
+.09d5	a5 fb		lda $fb		        lda src                 ; src one row up
+.09d7	38		sec		        sec
+.09d8	e9 28		sbc #$28	        sbc #40
+.09da	85 fb		sta $fb		        sta src
+.09dc	b0 02		bcs $09e0	        bcs +
+.09de	c6 fc		dec $fc		        dec src+1
+.09e0	ca		dex		+       dex
+.09e1	d0 dc		bne $09bf	        bne sc_row
+.09e3	a0 27		ldy #$27	        ldy #39                 ; empty the top row of the play area
+.09e5	a9 20		lda #$20	        lda #32
+.09e7	99 28 04	sta $0428,y	-       sta screen+40,y
+.09ea	88		dey		        dey
+.09eb	10 fa		bpl $09e7	        bpl -
+.09ed	60		rts		        rts
+.09ee					addrocks
+.09ee	a2 03		ldx #$03	        ldx #3
+.09f0	ad 1b d4	lda $d41b	-       lda sid+27              ; a random number from voice 3
+.09f3	cd bf 0b	cmp $0bbf	        cmp density
+.09f6	b0 0f		bcs $0a07	        bcs +                   ; no rock this time
+.09f8	ad 1b d4	lda $d41b	        lda sid+27
+.09fb	29 3f		and #$3f	        and #63                 ; a column 0-63...
+.09fd	c9 28		cmp #$28	        cmp #40                 ; ...and only 0-39 count
+.09ff	b0 06		bcs $0a07	        bcs +
+.0a01	a8		tay		        tay
+.0a02	a9 51		lda #$51	        lda #rock
+.0a04	99 28 04	sta $0428,y	        sta screen+40,y
+.0a07	ca		dex		+       dex
+.0a08	d0 e6		bne $09f0	        bne -
+.0a0a	60		rts		        rts
+.0a0b					addscore
+.0a0b	f8		sed		        sed                     ; decimal mode: 0099 + 1 = 0100
+.0a0c	18		clc		        clc
+.0a0d	ad c2 0b	lda $0bc2	        lda score
+.0a10	69 01		adc #$01	        adc #1
+.0a12	8d c2 0b	sta $0bc2	        sta score
+.0a15	ad c3 0b	lda $0bc3	        lda score+1
+.0a18	69 00		adc #$00	        adc #0
+.0a1a	8d c3 0b	sta $0bc3	        sta score+1
+.0a1d	d8		cld		        cld
+.0a1e	20 42 0a	jsr $0a42	        jsr showscore
+.0a21	ee c0 0b	inc $0bc0	        inc rows
+.0a24	ad c0 0b	lda $0bc0	        lda rows
+.0a27	29 1f		and #$1f	        and #31
+.0a29	d0 16		bne $0a41	        bne asdone
+.0a2b	ad bf 0b	lda $0bbf	        lda density             ; more rocks...
+.0a2e	c9 a0		cmp #$a0	        cmp #160
+.0a30	b0 05		bcs $0a37	        bcs +
+.0a32	69 10		adc #$10	        adc #16
+.0a34	8d bf 0b	sta $0bbf	        sta density
+.0a37	ad be 0b	lda $0bbe	+       lda delay               ; ...and faster, down to 2 frames a row
+.0a3a	c9 02		cmp #$02	        cmp #2
+.0a3c	f0 03		beq $0a41	        beq asdone
+.0a3e	ce be 0b	dec $0bbe	        dec delay
+.0a41	60		rts		asdone  rts
+.0a42					showscore
+.0a42	a2 00		ldx #$00	        ldx #0
+.0a44	a0 07		ldy #$07	        ldy #7
+.0a46	18		clc		        clc
+.0a47	20 f0 ff	jsr $fff0	        jsr plot
+.0a4a	a9 05		lda #$05	        lda #5                  ; white
+.0a4c	20 d2 ff	jsr $ffd2	        jsr chrout
+.0a4f	ad c3 0b	lda $0bc3	        lda score+1
+.0a52	20 58 0a	jsr $0a58	        jsr putbcd
+.0a55	ad c2 0b	lda $0bc2	        lda score
+.0a58	48		pha		putbcd  pha
+.0a59	4a		lsr a		        lsr
+.0a5a	4a		lsr a		        lsr
+.0a5b	4a		lsr a		        lsr
+.0a5c	4a		lsr a		        lsr
+.0a5d	09 30		ora #$30	        ora #$30                ; "0" + high digit
+.0a5f	20 d2 ff	jsr $ffd2	        jsr chrout
+.0a62	68		pla		        pla
+.0a63	29 0f		and #$0f	        and #$0f
+.0a65	09 30		ora #$30	        ora #$30                ; "0" + low digit
+.0a67	4c d2 ff	jmp $ffd2	        jmp chrout
+.0a6a					gameover
+.0a6a	a9 0a		lda #$0a	        lda #$0a                ; voice 1: a burst of noise
+.0a6c	8d 05 d4	sta $d405	        sta sid+5               ; attack 0, decay 10
+.0a6f	a9 00		lda #$00	        lda #0
+.0a71	8d 06 d4	sta $d406	        sta sid+6
+.0a74	a9 08		lda #$08	        lda #8
+.0a76	8d 01 d4	sta $d401	        sta sid+1
+.0a79	a9 81		lda #$81	        lda #$81                ; noise, gate on
+.0a7b	8d 04 d4	sta $d404	        sta sid+4
+.0a7e	a2 19		ldx #$19	        ldx #25                 ; flash the border for half a second
+.0a80	8e 20 d0	stx $d020	-       stx border
+.0a83	20 5b 09	jsr $095b	        jsr waitframe
+.0a86	ca		dex		        dex
+.0a87	d0 f7		bne $0a80	        bne -
+.0a89	8e 20 d0	stx $d020	        stx border              ; x = 0: black again
+.0a8c	a9 80		lda #$80	        lda #$80                ; gate off
+.0a8e	8d 04 d4	sta $d404	        sta sid+4
+.0a91	ad c3 0b	lda $0bc3	        lda score+1             ; a new high score?
+.0a94	cd c5 0b	cmp $0bc5	        cmp hi+1
+.0a97	90 16		bcc $0aaf	        bcc gonohi
+.0a99	d0 08		bne $0aa3	        bne gohi
+.0a9b	ad c2 0b	lda $0bc2	        lda score
+.0a9e	cd c4 0b	cmp $0bc4	        cmp hi
+.0aa1	90 0c		bcc $0aaf	        bcc gonohi
+.0aa3	ad c2 0b	lda $0bc2	gohi    lda score
+.0aa6	8d c4 0b	sta $0bc4	        sta hi
+.0aa9	ad c3 0b	lda $0bc3	        lda score+1
+.0aac	8d c5 0b	sta $0bc5	        sta hi+1
+.0aaf	a9 6e		lda #$6e	gonohi  lda #<overtxt
+.0ab1	a0 0b		ldy #$0b	        ldy #>overtxt
+.0ab3	20 bf 0a	jsr $0abf	        jsr texts
+.0ab6	a2 64		ldx #$64	        ldx #100                ; two seconds
+.0ab8	20 5b 09	jsr $095b	-       jsr waitframe
+.0abb	ca		dex		        dex
+.0abc	d0 fa		bne $0ab8	        bne -
+.0abe	60		rts		        rts
+.0abf	85 fb		sta $fb		texts   sta src
+.0ac1	84 fc		sty $fc		        sty src+1
+.0ac3	a0 00		ldy #$00	        ldy #0
+.0ac5	b1 fb		lda ($fb),y	tx_next lda (src),y             ; row
+.0ac7	30 1d		bmi $0ae6	        bmi tx_done             ; $ff ends the table
+.0ac9	aa		tax		        tax
+.0aca	c8		iny		        iny
+.0acb	b1 fb		lda ($fb),y	        lda (src),y             ; column
+.0acd	c8		iny		        iny
+.0ace	8c c1 0b	sty $0bc1	        sty tmp
+.0ad1	a8		tay		        tay
+.0ad2	18		clc		        clc
+.0ad3	20 f0 ff	jsr $fff0	        jsr plot
+.0ad6	ac c1 0b	ldy $0bc1	        ldy tmp
+.0ad9	b1 fb		lda ($fb),y	-       lda (src),y             ; the text, up to a 0
+.0adb	f0 06		beq $0ae3	        beq +
+.0add	20 d2 ff	jsr $ffd2	        jsr chrout
+.0ae0	c8		iny		        iny
+.0ae1	d0 f6		bne $0ad9	        bne -
+.0ae3	c8		iny		+       iny
+.0ae4	d0 df		bne $0ac5	        bne tx_next
+.0ae6	60		rts		tx_done rts
+.0ae7					titletxt
+>0ae7	05 0f 9e			        .byte 5, 15, 158
+>0aea	c4 20 cf 20 c4 20 c7 20		        .text "D O D G E", 0
+>0af2	c5 00
+>0af4	08 08 05			        .byte 8, 8, 5
+>0af7	c4 cf c4 c7 c5 20 d4 c8		        .text "DODGE THE FALLING ROCKS", 0
+>0aff	c5 20 c6 c1 cc cc c9 ce c7 20 d2 cf c3 cb d3 00
+>0b0f	0b 05 9b			        .byte 11, 5, 155
+>0b12	ca cf d9 d3 d4 c9 c3 cb		        .text "JOYSTICK IN PORT 2 OR Z AND X", 0
+>0b1a	20 c9 ce 20 d0 cf d2 d4 20 32 20 cf d2 20 da 20
+>0b2a	c1 ce c4 20 d8 00
+>0b30	0e 09 99			        .byte 14, 9, 153
+>0b33	c6 c9 d2 c5 20 cf d2 20		        .text "FIRE OR SPACE TO START", 0
+>0b3b	d3 d0 c1 c3 c5 20 d4 cf 20 d3 d4 c1 d2 d4 00
+>0b4a	10 0f 99			        .byte 16, 15, 153
+>0b4d	d1 20 d4 cf 20 d1 d5 c9		        .text "Q TO QUIT", 0
+>0b55	d4 00
+>0b57	13 10 05			        .byte 19, 16, 5
+>0b5a	c8 c9 00			        .text "HI", 0
+>0b5d	ff				        .byte $ff
+>0b5e	00 01 05			gametxt .byte 0, 1, 5
+>0b61	d3 c3 cf d2 c5 00		        .text "SCORE", 0
+>0b67	00 1e 05			        .byte 0, 30, 5
+>0b6a	c8 c9 00			        .text "HI", 0
+>0b6d	ff				        .byte $ff
+>0b6e	0c 0f 96			overtxt .byte 12, 15, 150
+>0b71	c7 c1 cd c5 20 cf d6 c5		        .text "GAME OVER", 0
+>0b79	d2 00
+>0b7b	ff				        .byte $ff
+>0b7c	00 18 00 00 3c 00 00 3c		ship    .byte $00,$18,$00, $00,$3c,$00, $00,$3c,$00, $00,$7e,$00
+>0b84	00 00 7e 00
+>0b88	00 7e 00 00 ff 00 01 ff		        .byte $00,$7e,$00, $00,$ff,$00, $01,$ff,$80, $03,$ff,$c0
+>0b90	80 03 ff c0
+>0b94	07 db e0 0f 99 f0 1f 18		        .byte $07,$db,$e0, $0f,$99,$f0, $1f,$18,$f8, $3c,$00,$3c
+>0b9c	f8 3c 00 3c
+>0ba0	30 00 0c			        .byte $30,$00,$0c
+>0ba3	00 00 00 00 00 00 00 00		        .fill 63-13*3, 0
+>0bab	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>0bbb	00				px      .byte 0                 ; ship position, 0-148
+>0bbc	00				msb     .byte 0
+>0bbd	00				timer   .byte 0                 ; frames until the next row
+>0bbe	00				delay   .byte 0                 ; frames per row
+>0bbf	00				density .byte 0                 ; chance of a rock
+>0bc0	00				rows    .byte 0                 ; rows survived, for the speed-up
+>0bc1	00				tmp     .byte 0
+>0bc2	00 00				score   .word 0                 ; BCD, 0000-9999
+>0bc4	00 00				hi      .word 0
+
+;******  End of listing

@@ -20,13 +20,22 @@ The Python preprocessor validates line numbers, duplicates, encoding, unmatched 
 
 **Important PETSCII behavior**: PETCAT's lower-case ASCII convention means uppercase source quoted text also becomes lower-case in the intermediate file, to display uppercase letters on the C64's default character set. This preserves the intended **visible uppercase text**, but it is NOT a general lossless conversion of mixed-case text or PETSCII control codes. For intentionally mixed-case screen text or special PETSCII symbols, use explicit `CHR$`, charset switching, or PETCAT escape conventions and test the resulting PRG. Non-ASCII Unicode/Greek source letters produce a diagnostic.
 
+## 6502 assembly with 64tass
+The same keystroke builds `.asm` files: `Ctrl+Shift+B` on an open `.asm` file runs **64tass** and starts the result in VICE, and the watcher picks up saved `.asm` files too.
+
+1. Download 64tass for Windows from <https://sourceforge.net/projects/tass64/> and put `64tass.exe` in `tools\` (next to `c64.py`). Or set `TASS` to its full path, or put it on the `PATH`.
+2. Open an `.asm` file and press `Ctrl+Shift+B`.
+
+The lab calls `64tass -C -a -i -Wall file.asm -o file.prg`: case-sensitive labels, ASCII text converted to PETSCII (write screen text in lower case, it shows as capitals), and all warnings. Errors and warnings appear in the Problems panel at the right line. Start a program at `$0801` with a BASIC line (`10 SYS 2061`) so VICE can `-autostart` it; see `listings/dodge/dodge.asm`.
+
 ### Diagnostics
 Build output uses `path(line): error: description`, shown in VS Code Problems. A failed build deletes the old PRG so stale programs cannot be launched. Note that arbitrary BASIC runtime errors (e.g. undefined variable, invalid screen coordinates) occur in the emulator, not at build time.
 
 ### File layout
 - `programs/*.bas`: numbered BASIC listings; `*.prg`: output next to each listing
 - `.build/*.petcat.txt`: generated intermediate PETCAT input
-- `tools/c64.py`: validation, normalization, conversion, watcher and launcher
+- `tools/c64.py`: validation, normalization, conversion (petcat for `.bas`, 64tass for `.asm`), watcher and launcher
+- `tools/64tass.exe`: the assembler, if you put it there (not in the repository)
 - `run-c64.bat`: manual build + run
 - `watch-c64.bat`: background run-on-save task
 - `.vscode/tasks.json`: two VS Code tasks

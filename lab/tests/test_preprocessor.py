@@ -21,5 +21,14 @@ class TestPreprocessor(unittest.TestCase):
         with self.assertRaises(c64.BuildError):
             c64.normalize_listing('10 PRINT "HI\n', 'test.bas')
 
+class TestAssembler(unittest.TestCase):
+    def test_64tass_messages(self):
+        out = ('dodge.asm:57:14: error: not defined symbol \'scrol\'\n'
+               ' jsr scrol\n'
+               'dodge.asm:3:1: warning: unused symbol\n')
+        self.assertEqual(c64.tass_diagnostics(out),
+                         [('dodge.asm', 57, 'error', "not defined symbol 'scrol'"),
+                          ('dodge.asm', 3, 'warning', 'unused symbol')])
+
 if __name__ == '__main__':
     unittest.main()

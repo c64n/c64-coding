@@ -1,5 +1,6 @@
 # C64 BASIC V2 build pipeline. Python 3.9+, no third-party dependencies.
 import argparse
+import shutil
 import os
 import re
 import subprocess
@@ -74,6 +75,8 @@ def build(source_path, launch=False):
     source_path = Path(source_path).resolve()
     if not source_path.is_file():
         raise BuildError(f'Listing not found: {source_path}')
+    if source_path.suffix.lower() == '.asm':
+        return build_asm(source_path, launch)
     petcat = vice_bin() / 'petcat.exe'
     emulator = vice_bin() / 'x64sc.exe'
     if not petcat.is_file():
@@ -116,15 +119,63 @@ def build(source_path, launch=False):
         print('C64: VICE launched. Close prior VICE windows manually if necessary.', flush=True)
     return out
 
+def find_64tass():
+    """64tass from TASS (a full path), next to this script, or on the PATH."""
+    candidates = [os.environ.get('TASS', ''), str(Path(__file__).with_name('64tass.exe')),
+                  shutil.which('64tass') or '']
+    for c in candidates:
+        if c and Path(c).is_file():
+            return c
+    raise BuildError('64tass not found: put 64tass.exe in lab\\tools or set TASS')
+
+TASS_MESSAGE = re.compile(r'^(.+?):(\d+):\d+: (error|warning): (.+)$')
+
+def tass_diagnostics(output):
+    """Turn 64tass messages (file:line:col: error: text) into the lab's format."""
+    found = []
+    for line in output.splitlines():
+        m = TASS_MESSAGE.match(line.strip())
+        if m:
+            found.append((m.group(1), int(m.group(2)), m.group(3), m.group(4)))
+    return found
+
+def build_asm(source_path, launch=False):
+    tass = find_64tass()
+    emulator = vice_bin() / 'x64sc.exe'
+    if launch and not emulator.is_file():
+        raise BuildError(f'x64sc.exe not found: {emulator}')
+    out = source_path.with_suffix('.prg')
+    if out.exists():
+        out.unlink()  # Never run a stale PRG after a failed build.
+    print(f'C64: assembling {source_path}', flush=True)
+    result = subprocess.run([tass, '-C', '-a', '-i', '-Wall', str(source_path), '-o', str(out)],
+                            capture_output=True, text=True, errors='replace',
+                            cwd=str(source_path.parent))
+    messages = tass_diagnostics(result.stdout + '\n' + result.stderr)
+    for file, line, severity, text in messages:
+        diagnostic(Path(source_path.parent, file).resolve(), line, text, severity)
+    if result.returncode or not out.is_file():
+        raise BuildError(f'64tass failed ({result.returncode})')
+    raw = out.read_bytes()
+    print(f'C64: OK -> {out} ({len(raw)} bytes, load address ${raw[0] | raw[1] << 8:04x})', flush=True)
+    if launch:
+        subprocess.Popen([str(emulator), '-autostart', str(out)], cwd=str(vice_bin()))
+        print('C64: VICE launched. Close prior VICE windows manually if necessary.', flush=True)
+    return out
+
+def sources(directory):
+    return {p: p.stat().st_mtime_ns for pattern in ('*.bas', '*.asm')
+            for p in directory.rglob(pattern) if p.is_file()}
+
 def watch(directory, launch):
     directory = Path(directory).resolve()
-    print(f'C64 WATCH: observing saved .bas files in {directory}', flush=True)
+    print(f'C64 WATCH: observing saved .bas and .asm files in {directory}', flush=True)
     print('C64 WATCH: idle', flush=True)
     # Snapshot initial state; only future saves trigger builds.
-    known = {p: p.stat().st_mtime_ns for p in directory.rglob('*.bas') if p.is_file()}
+    known = sources(directory)
     while True:
         time.sleep(0.7)
-        current = {p: p.stat().st_mtime_ns for p in directory.rglob('*.bas') if p.is_file()}
+        current = sources(directory)
         for p, mtime in sorted(current.items()):
             if known.get(p) != mtime:
                 print(f'C64 WATCH: processing {p.name}', flush=True)
@@ -136,7 +187,7 @@ def watch(directory, launch):
         known = current
 
 def main():
-    parser = argparse.ArgumentParser(description='C64 BASIC V2 PETCAT build + VICE launcher')
+    parser = argparse.ArgumentParser(description='C64 build (BASIC V2 with petcat, 6502 assembly with 64tass) + VICE launcher')
     parser.add_argument('listing', nargs='?')
     parser.add_argument('--run', action='store_true')
     parser.add_argument('--watch', metavar='DIR')
@@ -147,7 +198,7 @@ def main():
         elif args.listing:
             build(args.listing, args.run)
         else:
-            parser.error('Pass a .bas listing or --watch DIRECTORY')
+            parser.error('Pass a .bas or .asm file, or --watch DIRECTORY')
     except (BuildError, OSError) as e:
         diagnostic(args.listing or args.watch or ROOT, 1, str(e))
         return 1

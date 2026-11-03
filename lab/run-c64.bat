@@ -2,7 +2,7 @@
 setlocal
 set "VICE_BIN=D:\GTK3VICE-3.10-win64\bin"
 if "%~1"=="" (
-  echo Usage: run-c64.bat "path-to-listing.bas"
+  echo Usage: run-c64.bat "path-to-listing.bas or program.asm"
   exit /b 1
 )
 where py >nul 2>&1
