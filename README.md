@@ -26,7 +26,8 @@ This repository holds everything behind the site: the listings, the ready-to-run
 7    "ZARIA"            PRG
 4    "BALL"             PRG
 7    "QUADRATIC"        PRG
-646 BLOCKS FREE.
+12   "CLOCK"            PRG
+634 BLOCKS FREE.
 READY.
 ```
 
@@ -35,6 +36,7 @@ READY.
 | 7 | [ZARIA](listings/zaria) | Three dice that tumble, rattle and land; calls doubles and triples | Games | [read](https://c64n.blogspot.com/2026/11/zaria-three-dice-on-commodore-64.html) |
 | 4 | [BALL](listings/ball) | A ball bouncing round the screen: new colour, a SID note and a count on every bounce | Graphics | [read](https://c64n.blogspot.com/2026/11/the-bouncing-ball-animation-with-poke.html) |
 | 7 | [QUADRATIC](listings/quadratic) | Solves ax²+bx+c=0 (real, double, complex or linear) and checks the answer | Maths | [read](https://c64n.blogspot.com/2026/11/quadratic-equations.html) |
+| 12 | [CLOCK](listings/clock) | A digital clock with big digits, a blinking colon and an alarm | Utilities | [read](https://c64n.blogspot.com/2026/11/digital-clock.html) |
 
 ## RUN
 

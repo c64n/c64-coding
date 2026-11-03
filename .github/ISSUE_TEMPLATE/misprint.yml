@@ -15,6 +15,7 @@ body:
         - ZARIA
         - BALL
         - QUADRATIC
+        - CLOCK
         - Other (write it below)
     validations:
       required: true

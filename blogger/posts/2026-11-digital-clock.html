@@ -1,0 +1,177 @@
+<!--
+  POST:    CLOCK: A Digital Clock with Big Digits and an Alarm
+  LABELS:  Listing, Utilities
+  PERMALINK (Custom): digital-clock
+  Paste in Blogger: New post > HTML view. Images load from the GitHub repo.
+-->
+
+<div class="info-card">
+  <p class="info-card-title">CLOCK</p>
+  <dl>
+    <dt>Type</dt><dd>Utility</dd>
+    <dt>Language</dt><dd>Commodore BASIC V2</dd>
+    <dt>Length</dt><dd>66 lines &middot; 12 blocks (2,807 bytes)</dd>
+    <dt>Keys</dt><dd>Numbers and <kbd>RETURN</kbd> to set it; <kbd>Y</kbd>/<kbd>N</kbd> for the alarm; any key stops the alarm; <kbd>Q</kbd> quits</dd>
+    <dt>Special keys</dt><dd>None</dd>
+  </dl>
+</div>
+
+<p>Tell the C64 what time it is, and it keeps the time on its own, in big digits across the middle of the screen, with a colon that blinks every second. Set an alarm and at the right minute it beeps and flashes until you press a key. The clock itself is one line of BASIC: everything else is about drawing big numbers quickly.</p>
+
+<!-- IMAGE: clock-run.png goes here -->
+
+<!--more-->
+
+<h2>The listing</h2>
+
+<div class="tip"><p>Type every letter without SHIFT. This listing has a remark on most lines, after <code>:REM</code>. They explain the code as you type it, but the C64 ignores them, so you can leave them out to save typing: the program runs the same.</p></div>
+
+<script type="text/plain" class="listing" data-name="CLOCK">
+10 rem clock - big digits and an alarm
+20 rem c64 coding - c64n.blogspot.com
+30 rem
+100 rem ---- setup ----
+110 poke 53280,0:poke 53281,0:rem black border, black screen
+120 rv$=chr$(18):ro$=chr$(146):bk$=rv$+" "+ro$:rem rvs on/off, a block
+130 dn$="":for i=1 to 24:dn$=dn$+chr$(17):next:rem 24 cursor downs
+140 nl$=chr$(17)+chr$(157)+chr$(157)+chr$(157):rem down, 3 lefts
+150 sd=54272:for i=0 to 24:poke sd+i,0:next:rem silence the sid
+160 poke sd+24,15:poke sd+1,40:poke sd+5,9:rem volume, pitch, decay
+170 dim g$(9),x(6):for i=1 to 6:read x(i):next:rem digit columns
+180 r=8:gosub 700:rem top row of the digits; build them
+190 data 6,10,16,20,26,30
+200 rem ---- ask for the time ----
+210 print chr$(147);chr$(158);tab(14);"c l o c k":print:print chr$(5)
+220 input "  hours   (0-23)";h:if h<0 or h>23 or h<>int(h) then 220
+230 input "  minutes (0-59)";m:if m<0 or m>59 or m<>int(m) then 230
+240 input "  seconds (0-59)";s:if s<0 or s>59 or s<>int(s) then 240
+250 al$="":print:print "  set an alarm (y/n)?"
+260 get k$:if k$="" then 260
+270 if k$<>"y" then 310
+280 input "  alarm hours   (0-23)";a:if a<0 or a>23 or a<>int(a) then 280
+290 v=a:gosub 800:al$=v$:rem alarm hours, two digits
+300 input "  alarm minutes (0-59)";a:if a<0 or a>59 or a<>int(a) then 300
+305 v=a:gosub 800:a$=al$+":"+v$:al$=al$+v$:rem al$="hhmm"
+310 v=h:gosub 800:t$=v$:v=m:gosub 800:t$=t$+v$
+320 v=s:gosub 800:ti$=t$+v$:rem set the clock: ti$="hhmmss"
+400 rem ---- the clock screen ----
+410 print chr$(147);chr$(158);tab(14);"c l o c k"
+420 if al$="" then 440
+430 print chr$(19);left$(dn$,16);tab(14);chr$(158);"alarm ";a$
+440 print chr$(19);left$(dn$,20);tab(15);chr$(152);"q to quit"
+450 o$="------":ra=0:rem no digits on screen yet, alarm not ringing
+500 rem ---- main loop ----
+510 get k$:if k$="q" then 900
+520 if k$<>"" and ra then ra=0:gosub 650:rem any key stops the alarm
+530 t$=ti$:if t$=o$ then 510:rem wait for the next second
+540 for i=1 to 6:d$=mid$(t$,i,1):rem draw only the digits that changed
+550 if d$<>mid$(o$,i,1) then print chr$(19);left$(dn$,r);tab(x(i));g$(val(d$))
+560 next i:o$=t$
+570 c$=" ":if (val(right$(t$,1)) and 1)=0 then c$=bk$:rem blink
+580 for y=r+1 to r+3 step 2:print chr$(19);left$(dn$,y);tab(14);c$;tab(24);c$
+585 next y
+590 if al$<>"" and left$(t$,4)=al$ then al$="":ra=1:rem alarm time!
+600 if ra then gosub 620
+610 goto 510
+620 rem ---- ring: a beep and a flashing message ----
+630 poke sd+4,16:poke sd+4,17:rem gate off and on: a new beep
+640 print chr$(19);left$(dn$,16);tab(13);chr$(28);c$;" wake up! ";c$:return
+650 rem ---- alarm off: silence and clear the message ----
+660 poke sd+4,16:print chr$(19);left$(dn$,16);tab(13);"            ":return
+700 rem ---- build g$(0)-g$(9): 5 rows of 3 cells ----
+710 for d=0 to 9:read p$:b$=chr$(159):rem cyan
+720 for y=0 to 4:for x=1 to 3:if mid$(p$,y*3+x,1)="1" then b$=b$+bk$:goto 740
+730 b$=b$+" "
+740 next x:b$=b$+nl$:next y
+750 g$(d)=b$:next d:return
+760 data "111101101101111","010110010010111","111001111100111"
+770 data "111001111001111","101101111001001","111100111001111"
+780 data "111100111101111","111001001001001","111101111101111"
+790 data "111101111001111"
+800 rem ---- v$ = v as two digits: 7 -> "07" ----
+810 v$=right$(str$(v+100),2):return
+900 rem ---- quit ----
+910 poke sd+24,0:poke 53280,14:poke 53281,6:rem sound off, colours back
+920 print chr$(147);chr$(154);"bye!":end
+</script>
+
+<div class="warn"><p>Line 660 prints <strong>twelve spaces</strong> between the quotes, to wipe out the alarm message. Lines 210, 220&ndash;240 and 280&ndash;300 have spaces that line things up, too.</p></div>
+
+<h2>How it works</h2>
+
+<table class="data">
+  <thead><tr><th>Lines</th><th>Block</th></tr></thead>
+  <tbody>
+    <tr><td>100&ndash;190</td><td>Setup: colours, control codes, the SID, the digit positions</td></tr>
+    <tr><td>200&ndash;320</td><td>Ask for the time and the alarm, then start the clock</td></tr>
+    <tr><td>400&ndash;450</td><td>Draw the clock screen</td></tr>
+    <tr><td>500&ndash;610</td><td>Main loop: wait for a new second, redraw what changed, blink, alarm</td></tr>
+    <tr><td>620&ndash;660</td><td>Subroutines: ring the alarm, stop the alarm</td></tr>
+    <tr><td>700&ndash;790</td><td>Subroutine: build the ten big digits, once</td></tr>
+    <tr><td>800&ndash;810</td><td>Subroutine: a number as two digits</td></tr>
+    <tr><td>900&ndash;920</td><td>Quit</td></tr>
+  </tbody>
+</table>
+
+<h3>TI$: a clock that is already running</h3>
+<p>The C64 has a clock built in. Sixty times a second an interrupt adds one to <code>TI</code>, the jiffy counter, whatever your program is doing. <code>TI$</code> shows the same count as a time of day, six digits <em>hhmmss</em>, and unlike <code>TI</code> you can set it: <code>TI$="073000"</code> means half past seven. From then on the C64 counts by itself, and at 23:59:59 it rolls over to 000000 on its own. So the program never adds seconds: it only reads <code>TI$</code> and draws it.</p>
+<p>Two things stop the count: anything that switches the interrupt off, like loading from tape or disk, and switching the machine off. A clock in BASIC is as accurate as the interrupt, which is good enough for a desk and not for a railway.</p>
+
+<h3>Lines 220&ndash;300: asking politely</h3>
+<p>Each <code>INPUT</code> checks its own answer on the same line: below 0, too big, or not a whole number (<code>H&lt;&gt;INT(H)</code>), and it simply asks again. Hours go from 0 to 23 and minutes and seconds from 0 to 59: a clock has no 24th hour and no 60th minute. Type letters instead of a number and the C64 itself answers <code>?REDO FROM START</code>.</p>
+<p>The alarm question uses <code>GET</code> instead, so a single <kbd>Y</kbd> or <kbd>N</kbd> is enough, without <kbd>RETURN</kbd>.</p>
+
+<h3>Lines 800&ndash;810: two digits, the short way</h3>
+<p><code>TI$</code> wants exactly six digits, so 7 must become &ldquo;07&rdquo;. Adding 100 does it: <code>STR$(7+100)</code> is &ldquo;&nbsp;107&rdquo;, and its last two characters are &ldquo;07&rdquo;. For 23, &ldquo;&nbsp;123&rdquo; gives &ldquo;23&rdquo;. One line, no IF.</p>
+
+<h3>Lines 700&ndash;790: big digits made of blocks</h3>
+<p>Each digit is drawn on a 3&times;5 grid. The DATA lines hold the ten grids, row by row, with 1 for a block and 0 for a space. Seven, <code>"111001001001001"</code>, is:</p>
+<div class="c64-screen"><pre>1 1 1
+0 0 1
+0 0 1
+0 0 1
+0 0 1</pre></div>
+<p>The subroutine turns each grid into one string that draws the whole digit: a block is <code>BK$</code>, a reversed space, and after each row <code>NL$</code> moves the cursor one row down and three columns back. It is the same trick as the dice in <a href="/2026/11/zaria-three-dice-on-commodore-64.html">ZARIA</a>: build once, print many times. Every grid writes all fifteen cells, spaces included, so a new digit always covers the old one completely.</p>
+
+<h3>Lines 510&ndash;560: redraw only what changed</h3>
+<p>The main loop reads <code>TI$</code> and goes straight back to the start until it is different from <code>O$</code>, the time on the screen. When a new second arrives, it compares the two strings digit by digit and redraws only the digits that changed. Most seconds that is one digit; when 09:59:59 turns into 10:00:00, it is all six. Drawing less means the screen is never caught half-drawn.</p>
+<p><code>O$</code> starts as <code>"------"</code>, which matches no digit, so the first pass draws all six.</p>
+
+<h3>Lines 570&ndash;585: the blinking colon</h3>
+<p><code>VAL(RIGHT$(T$,1)) AND 1</code> is 0 when the last digit of the seconds is even and 1 when it is odd. So the colon is a block on even seconds and a space on odd ones, and it blinks once a second without a counter of its own.</p>
+
+<h3>Lines 590&ndash;660: the alarm</h3>
+<p><code>AL$</code> holds the alarm as <em>hhmm</em>. When the first four digits of the time match it, the alarm starts ringing and <code>AL$</code> is emptied, so it rings only once. Every second while it rings, line 630 closes and reopens the gate of voice 1 for a short beep (decay 9, no sustain, so each beep fades on its own), and line 640 flashes &ldquo;WAKE UP!&rdquo; in red, with marks that blink with the colon. Any key stops it.</p>
+
+<h3>Lines 900&ndash;920: leaving tidily</h3>
+<p>Volume off and the usual colours back. The clock in <code>TI$</code> keeps running after the program ends: type <span class="cmd">PRINT TI$</span> and see.</p>
+
+<h2>Variables</h2>
+
+<table class="data">
+  <thead><tr><th>Name</th><th>Holds</th></tr></thead>
+  <tbody>
+    <tr><td>RV$, RO$, BK$</td><td>reverse on, reverse off, one block</td></tr>
+    <tr><td>DN$, NL$</td><td>24 cursor-downs; down and three back</td></tr>
+    <tr><td>G$(0)&ndash;G$(9)</td><td>the ten big digits, ready to PRINT</td></tr>
+    <tr><td>X(1)&ndash;X(6), R</td><td>column of each digit, top row</td></tr>
+    <tr><td>H, M, S</td><td>the time you typed</td></tr>
+    <tr><td>T$, O$</td><td>the time now, the time on the screen</td></tr>
+    <tr><td>AL$, A$, RA</td><td>alarm as hhmm, alarm as hh:mm, 1 while ringing</td></tr>
+    <tr><td>C$</td><td>the colon: a block or a space</td></tr>
+    <tr><td>SD</td><td>54272, the first SID register</td></tr>
+    <tr><td>V, V$</td><td>a number and its two-digit form</td></tr>
+  </tbody>
+</table>
+
+<h2>Try this</h2>
+<ul>
+  <li><strong>Another colour:</strong> change <code>CHR$(159)</code> in line 710 to <code>CHR$(158)</code> for yellow digits, or <code>CHR$(30)</code> for green.</li>
+  <li><strong>A snooze:</strong> in line 520, after stopping the alarm, set <code>AL$</code> to the time five minutes later.</li>
+  <li><strong>A stopwatch:</strong> set <code>TI$="000000"</code> instead of asking, and you have one.</li>
+</ul>
+
+<h2>Run it</h2>
+<p>Press <span class="cmd">&darr; .PRG</span> on the listing and drop the file on a VICE window. Source and program are also on <a href="https://github.com/c64n/c64-coding/tree/main/listings/clock" rel="noopener">GitHub</a>.</p>
+
+<!-- VIDEO: new YouTube embed goes here -->
