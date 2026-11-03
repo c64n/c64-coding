@@ -6,8 +6,8 @@ A digital clock for the Commodore 64: big digits made of reverse-video blocks, a
 |---|---|
 | Category | Utilities |
 | Language | Commodore BASIC V2 |
-| Length | 66 lines, 12 blocks (2,807 bytes) |
-| Keys | Numbers and RETURN to set it; <kbd>Y</kbd>/<kbd>N</kbd> for the alarm; any key stops the alarm; <kbd>Q</kbd> quits |
+| Length | 74 lines, 13 blocks (3,153 bytes) |
+| Keys | Digits, INST/DEL and RETURN to set it; <kbd>Y</kbd>/<kbd>N</kbd> for the alarm; any key stops the alarm; <kbd>Q</kbd> quits |
 | Special keys | None |
 | Article | [CLOCK: A Digital Clock with Big Digits and an Alarm](https://c64n.blogspot.com/2026/11/digital-clock.html) |
 
@@ -27,4 +27,5 @@ A digital clock for the Commodore 64: big digits made of reverse-video blocks, a
 | 620–660 | Subroutines: ring the alarm, stop it |
 | 700–790 | Subroutine, run once: build the ten 3×5 digits as strings |
 | 800–810 | Subroutine: a number as two digits (`RIGHT$(STR$(V+100),2)`) |
+| 850–885 | Subroutine: read a number with `GET`: digits only, two at most, DEL and RETURN |
 | 900–920 | Quit: sound off, colours back |

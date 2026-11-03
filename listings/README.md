@@ -5,8 +5,8 @@
 7    "ZARIA"            PRG
 4    "BALL"             PRG
 7    "QUADRATIC"        PRG
-12   "CLOCK"            PRG
-634 BLOCKS FREE.
+13   "CLOCK"            PRG
+633 BLOCKS FREE.
 READY.
 ```
 
@@ -17,6 +17,6 @@ One folder per listing published on [c64n.blogspot.com](https://c64n.blogspot.co
 | 7 | [ZARIA](zaria) | Games | [read](https://c64n.blogspot.com/2026/11/zaria-three-dice-on-commodore-64.html) |
 | 4 | [BALL](ball) | Graphics | [read](https://c64n.blogspot.com/2026/11/the-bouncing-ball-animation-with-poke.html) |
 | 7 | [QUADRATIC](quadratic) | Maths | [read](https://c64n.blogspot.com/2026/11/quadratic-equations.html) |
-| 12 | [CLOCK](clock) | Utilities | [read](https://c64n.blogspot.com/2026/11/digital-clock.html) |
+| 13 | [CLOCK](clock) | Utilities | [read](https://c64n.blogspot.com/2026/11/digital-clock.html) |
 
 To run one, download its `.prg` and drag it onto a [VICE](https://vice-emu.sourceforge.io/) window.

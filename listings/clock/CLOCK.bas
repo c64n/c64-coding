@@ -5,7 +5,7 @@
 110 poke 53280,0:poke 53281,0:rem black border, black screen
 120 rv$=chr$(18):ro$=chr$(146):bk$=rv$+" "+ro$:rem rvs on/off, a block
 130 dn$="":for i=1 to 24:dn$=dn$+chr$(17):next:rem 24 cursor downs
-140 nl$=chr$(17)+chr$(157)+chr$(157)+chr$(157):rem down, 3 lefts
+140 lf$=chr$(157):nl$=chr$(17)+lf$+lf$+lf$:rem left; down and 3 lefts
 150 sd=54272:for i=0 to 24:poke sd+i,0:next:rem silence the sid
 160 poke sd+24,15:poke sd+1,40:poke sd+5,9:rem volume, pitch, decay
 170 dim g$(9),x(6):for i=1 to 6:read x(i):next:rem digit columns
@@ -13,16 +13,16 @@
 190 data 6,10,16,20,26,30
 200 rem ---- ask for the time ----
 210 print chr$(147);chr$(158);tab(14);"c l o c k":print:print chr$(5)
-220 input "  hours   (0-23)";h:if h<0 or h>23 or h<>int(h) then 220
-230 input "  minutes (0-59)";m:if m<0 or m>59 or m<>int(m) then 230
-240 input "  seconds (0-59)";s:if s<0 or s>59 or s<>int(s) then 240
+220 print "  hours   (0-23)? ";:gosub 850:h=v:if h>23 then 220
+230 print "  minutes (0-59)? ";:gosub 850:m=v:if m>59 then 230
+240 print "  seconds (0-59)? ";:gosub 850:s=v:if s>59 then 240
 250 al$="":print:print "  set an alarm (y/n)?"
 260 get k$:if k$="" then 260
 270 if k$<>"y" then 310
-280 input "  alarm hours   (0-23)";a:if a<0 or a>23 or a<>int(a) then 280
-290 v=a:gosub 800:al$=v$:rem alarm hours, two digits
-300 input "  alarm minutes (0-59)";a:if a<0 or a>59 or a<>int(a) then 300
-305 v=a:gosub 800:a$=al$+":"+v$:al$=al$+v$:rem al$="hhmm"
+280 print "  alarm hours   (0-23)? ";:gosub 850:if v>23 then 280
+290 gosub 800:al$=v$:rem alarm hours, two digits
+300 print "  alarm minutes (0-59)? ";:gosub 850:if v>59 then 300
+305 gosub 800:a$=al$+":"+v$:al$=al$+v$:rem al$="hhmm"
 310 v=h:gosub 800:t$=v$:v=m:gosub 800:t$=t$+v$
 320 v=s:gosub 800:ti$=t$+v$:rem set the clock: ti$="hhmmss"
 400 rem ---- the clock screen ----
@@ -61,6 +61,14 @@
 790 data "111101111001111"
 800 rem ---- v$ = v as two digits: 7 -> "07" ----
 810 v$=right$(str$(v+100),2):return
+850 rem ---- read a number: digits, del and return ----
+855 n$="":print bk$;lf$;:rem our own cursor, a block
+860 get k$:if k$="" then 860
+865 if k$=chr$(13) and n$<>"" then print " ":v=val(n$):return
+870 if k$<>chr$(20) or n$="" then 880:rem not del, or nothing to delete
+875 n$=left$(n$,len(n$)-1):print " ";lf$;lf$;bk$;lf$;:goto 860
+880 if k$<"0" or k$>"9" or len(n$)=2 then 860:rem digits only, two at most
+885 n$=n$+k$:print k$;bk$;lf$;:goto 860
 900 rem ---- quit ----
 910 poke sd+24,0:poke 53280,14:poke 53281,6:rem sound off, colours back
 920 print chr$(147);chr$(154);"bye!":end
