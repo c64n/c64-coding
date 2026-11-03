@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: C64 Coding site
+    url: https://c64n.blogspot.com
+    about: Every listing explained line by line.
+  - name: The Lab
+    url: https://c64n.blogspot.com/p/the-lab.html
+    about: How listings are checked, built and run.

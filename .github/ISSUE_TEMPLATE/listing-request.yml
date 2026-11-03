@@ -1,0 +1,28 @@
+name: "LOAD\"REQUEST\",8"
+description: Suggest a program for the site.
+title: "[REQUEST] "
+labels: ["request"]
+body:
+  - type: input
+    id: idea
+    attributes:
+      label: Program idea
+      placeholder: "A clock, a maze, a SID tune player..."
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Games
+        - Graphics
+        - Maths
+        - Music
+        - Utilities
+        - Other
+  - type: textarea
+    id: why
+    attributes:
+      label: What should it show?
+      description: The BASIC or C64 trick you would like to see explained.

@@ -1,0 +1,51 @@
+name: "?MISPRINT ERROR"
+description: A typo in a listing, a .prg that does not match, or a program that does not run.
+title: "[MISPRINT] "
+labels: ["errata"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for typing the listings in and checking them. One problem per report, please.
+  - type: dropdown
+    id: listing
+    attributes:
+      label: Listing
+      options:
+        - ZARIA
+        - BALL
+        - QUADRATIC
+        - Other (write it below)
+    validations:
+      required: true
+  - type: input
+    id: line
+    attributes:
+      label: Line number(s)
+      placeholder: "690"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong
+      description: What the site or repository shows, and what happens when you RUN it.
+      placeholder: |
+        Line 360 on the site: v=d1:c=8:gosub 500 ...
+        After RUN: ?SYNTAX  ERROR IN 360
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did you see it?
+      options:
+        - On the site (c64n.blogspot.com)
+        - In the .bas file
+        - When running the .prg
+        - In a YouTube video
+  - type: input
+    id: setup
+    attributes:
+      label: Machine or emulator
+      placeholder: "VICE 3.10 x64sc, PAL / real C64C / ..."

@@ -1,0 +1,129 @@
+<!--
+  POST:    How to Type In a Listing
+  LABELS:  Guide
+  Paste in Blogger: New post > HTML view.
+-->
+
+<div class="info-card">
+  <p class="info-card-title">AT A GLANCE</p>
+  <dl>
+    <dt>Letters</dt><dd>Type them without SHIFT</dd>
+    <dt>Each line</dt><dd>Line number, then the code, then RETURN</dd>
+    <dt>{CODES}</dt><dd>Keys pressed inside quotes; the legend under each listing says which</dd>
+    <dt>Save</dt><dd>SAVE"NAME",8 every few minutes</dd>
+    <dt>Stuck?</dt><dd>LIST the line from the error and compare it, character by character</dd>
+  </dl>
+</div>
+
+<p>In the 1980s, most software for the Commodore 64 arrived on paper. Books and magazines printed programs line by line, and you typed them in. It took an evening, the first RUN usually ended in <code>?SYNTAX ERROR</code>, and it was the best way ever invented to learn BASIC. This guide covers everything you need to type in the listings on this site, on a real C64 or in an emulator.</p>
+
+<!--more-->
+
+<h2>Warm up</h2>
+
+<p>Start with five lines. Type each one exactly as shown and press <kbd>RETURN</kbd> at the end of every line. Click a line on the screen below once you have typed it, and the site keeps track for you.</p>
+
+<script type="text/plain" class="listing" data-name="WARMUP">
+10 print "{clr}{wht}hello from c64 coding!"
+20 for i=1 to 5
+30 print "{cyn}line";i
+40 next i
+50 print "{yel}{2 down}ready to type a real one?"
+</script>
+
+<p>Then type <span class="cmd">RUN</span> and press <kbd>RETURN</kbd>. If the screen clears and counts to five in colour, you know everything below already.</p>
+
+<h2>The rules of the screen editor</h2>
+
+<h3>Letters: no SHIFT</h3>
+<p>Listings on this site are written in lower case because that is how the C64 sees ordinary letters. On the machine they appear as capitals. Holding <kbd>SHIFT</kbd> gives you graphic symbols instead, which is almost never what a listing wants.</p>
+
+<h3>Line numbers</h3>
+<p>Every line starts with a number. The C64 stores lines in numerical order, whatever order you type them in, so you can come back for a missed line later.</p>
+<ul>
+  <li><strong>Replace a line:</strong> type it again with the same number.</li>
+  <li><strong>Delete a line:</strong> type only its number and press <kbd>RETURN</kbd>.</li>
+  <li><strong>Fix a line:</strong> <span class="cmd">LIST 690</span>, move the cursor up onto it, type over the mistake and press <kbd>RETURN</kbd> while the cursor is still on that line.</li>
+</ul>
+
+<h3>80 characters per line</h3>
+<p>A line you type can be at most 80 characters, two rows of the screen. Some listings have longer lines. They fit because BASIC keywords can be abbreviated: the first letter, then the second letter with <kbd>SHIFT</kbd>. <kbd>P</kbd> + <kbd>SHIFT</kbd> <kbd>O</kbd> is POKE, and <kbd>?</kbd> on its own is PRINT. The abbreviation shows as a graphic symbol while you type and turns back into the full word when you LIST.</p>
+
+<h2>Typing the {CODES}</h2>
+
+<p>Many listings move the cursor or change colour inside a PRINT statement. On the C64 you do this by pressing the key itself while you are between quotes. The C64 is then in <em>quote mode</em>: instead of moving the cursor or changing the colour, it records the key as a reversed symbol in the line.</p>
+
+<p>On this site those keys are shown as <span class="pc">CLR</span>-style chips, and coloured chips show the colour they select. Under every listing, <strong>How to type the {codes}</strong> lists exactly which key gives each one. The common ones:</p>
+
+<table class="data">
+  <thead><tr><th>Code</th><th>Key</th><th>Does</th></tr></thead>
+  <tbody>
+    <tr><td>{CLR}</td><td><kbd>SHIFT</kbd> + <kbd>CLR/HOME</kbd></td><td>clears the screen</td></tr>
+    <tr><td>{HOME}</td><td><kbd>CLR/HOME</kbd></td><td>cursor to the top left</td></tr>
+    <tr><td>{DOWN} / {UP}</td><td><kbd>CRSR &#8661;</kbd>, with <kbd>SHIFT</kbd> for up</td><td>cursor down / up</td></tr>
+    <tr><td>{RIGHT} / {LEFT}</td><td><kbd>CRSR &#8660;</kbd>, with <kbd>SHIFT</kbd> for left</td><td>cursor right / left</td></tr>
+    <tr><td>{RVS ON} / {RVS OFF}</td><td><kbd>CTRL</kbd> + <kbd>9</kbd> / <kbd>0</kbd></td><td>reverse text on / off</td></tr>
+    <tr><td>{WHT} {RED} {CYN} &hellip;</td><td><kbd>CTRL</kbd> + <kbd>1</kbd>&ndash;<kbd>8</kbd></td><td>the first eight colours</td></tr>
+    <tr><td>{ORNG} {BRN} {LRED} &hellip;</td><td><kbd>C=</kbd> + <kbd>1</kbd>&ndash;<kbd>8</kbd></td><td>the other eight colours</td></tr>
+  </tbody>
+</table>
+
+<p>A number in front means &ldquo;press it that many times&rdquo;: <span class="pc">3 DOWN</span> is <kbd>CRSR &#8661;</kbd> three times.</p>
+
+<div class="warn"><p>Quote mode lasts until you type the closing quote. If you press a cursor key by mistake inside quotes, it becomes part of the line. The easiest fix is to finish the line, press <kbd>RETURN</kbd> and type the whole line again.</p></div>
+
+<h2>Check what you typed</h2>
+
+<pre class="code">LIST            <span class="dim">the whole program</span>
+LIST 500-600    <span class="dim">lines 500 to 600</span>
+LIST -100       <span class="dim">from the start to line 100</span>
+LIST 1000-      <span class="dim">from line 1000 to the end</span></pre>
+
+<p>Hold <kbd>CTRL</kbd> to slow the listing down, or press <kbd>RUN/STOP</kbd> to stop it.</p>
+
+<h2>Save early, save often</h2>
+
+<p>A typo in a POKE can lock up the machine, and then everything you typed is gone. Save every few minutes:</p>
+
+<pre class="code">SAVE"ZARIA",8      <span class="dim">to disk (drive 8)</span>
+SAVE"ZARIA"        <span class="dim">to tape</span>
+LOAD"ZARIA",8      <span class="dim">load it back, then RUN</span>
+LOAD"$",8          <span class="dim">load the disk directory, then LIST</span></pre>
+
+<div class="tip"><p>Saving again under a name that is already on the disk does nothing: the drive light blinks (error 63, FILE EXISTS) and the screen just says READY. Number your saves instead, <code>ZARIA1</code>, <code>ZARIA2</code> and so on, and you also keep a copy from before the last change.</p></div>
+
+<h2>When RUN goes wrong</h2>
+
+<p>The C64 tells you which line broke. <code>?SYNTAX  ERROR IN 690</code> means: <span class="cmd">LIST 690</span> and compare it with the listing, character by character. The usual suspects:</p>
+
+<table class="data">
+  <thead><tr><th>Typed</th><th>Should be</th><th>Typical result</th></tr></thead>
+  <tbody>
+    <tr><td>letter O</td><td>zero 0</td><td>?SYNTAX ERROR, or a wrong number</td></tr>
+    <tr><td>letter I or l</td><td>one 1</td><td>?SYNTAX ERROR</td></tr>
+    <tr><td>;</td><td>:</td><td>?SYNTAX ERROR</td></tr>
+    <tr><td>, or .</td><td>the other one</td><td>wrong values, ?OUT OF DATA</td></tr>
+    <tr><td>A</td><td>A$</td><td>?TYPE MISMATCH</td></tr>
+    <tr><td>a missing quote</td><td>"</td><td>keywords inside the text, odd output</td></tr>
+  </tbody>
+</table>
+
+<p>Other messages point somewhere else:</p>
+<ul>
+  <li><strong>?OUT OF DATA</strong>: a DATA line is missing, or a number in it is missing or has an extra comma.</li>
+  <li><strong>?UNDEF'D STATEMENT</strong>: a GOTO or GOSUB jumps to a line you have not typed yet.</li>
+  <li><strong>?BAD SUBSCRIPT</strong>: an array index is wrong. Check the DIM line and the line in the error.</li>
+  <li><strong>?NEXT WITHOUT FOR</strong>: a FOR line is missing or mistyped.</li>
+</ul>
+
+<p>If a program runs away and will not stop, hold <kbd>RUN/STOP</kbd> and tap <kbd>RESTORE</kbd>. The screen resets, and your program is still in memory.</p>
+
+<h2>The shortcuts on this site</h2>
+<ul>
+  <li><strong>Tick off lines</strong> as you type them. The site remembers where you stopped, even if you close the page.</li>
+  <li><strong><span class="cmd">&darr; .PRG</span></strong> gives you the finished program. Load it next to yours to see whether the problem is in your typing or in the listing.</li>
+  <li><strong>Aa</strong> switches the listing to a plain font if the pixel font is hard to read.</li>
+  <li>Found a mistake in a listing? <a href="https://github.com/c64n/c64-coding/issues/new?template=misprint.yml" rel="noopener">Report it</a>.</li>
+</ul>
+
+<p>No C64 at hand? <a href="/search/label/Emulators">Run the programs in VICE</a>, the free emulator used for every listing here.</p>

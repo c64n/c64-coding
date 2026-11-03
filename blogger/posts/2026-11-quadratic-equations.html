@@ -1,0 +1,186 @@
+<!--
+  POST:    Quadratic Equations: Solving ax²+bx+c=0 in BASIC
+  LABELS:  Listing, Maths
+  PERMALINK: keep the existing one (/2026/11/quadratic-equations.html)
+  Paste in Blogger: open the post > HTML view > replace everything. Images load from the GitHub repo.
+-->
+
+<div class="info-card">
+  <p class="info-card-title">QUADRATIC EQUATIONS</p>
+  <dl>
+    <dt>Type</dt><dd>Maths</dd>
+    <dt>Language</dt><dd>Commodore BASIC V2</dd>
+    <dt>Length</dt><dd>64 lines &middot; 7 blocks (1,551 bytes)</dd>
+    <dt>Keys</dt><dd>Numbers and <kbd>RETURN</kbd>; <kbd>Y</kbd> for another equation</dd>
+    <dt>Special keys</dt><dd>None</dd>
+  </dl>
+</div>
+
+<p>Type in three numbers and the C64 solves <em>ax&sup2; + bx + c = 0</em>. It writes the equation out the way you would on paper, shows the discriminant, finds two real roots, one double root or two complex ones, and then checks its own answer by putting it back into the equation. If <em>a</em> is zero it is not a quadratic at all, and the program says what it is instead.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="The C64 solving x squared plus x minus 1: discriminant 5, roots .618 and -1.618, check 0" height="545" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/quadratic/quadratic-real.png" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border:3px solid #706deb;" width="720" /></td></tr><tr><td class="tr-caption" style="text-align:center;">x&sup2; + x &minus; 1 = 0: two real roots, and the check comes back 0. Running in VICE.</td></tr></tbody></table>
+
+<!--more-->
+
+<h2>The listing</h2>
+
+<div class="tip"><p>Type every letter without SHIFT. The <code>^</code> is the up-arrow key, next to <kbd>RESTORE</kbd>: on the C64 it is the power sign, and it appears on the screen as &uarr;. Click each line to tick it off, or press <span class="cmd">&darr; .PRG</span>.</p></div>
+
+<script type="text/plain" class="listing" data-name="QUADRATIC">
+10 rem quadratic - solves a*x^2+b*x+c=0
+20 rem c64 coding - c64n.blogspot.com
+30 rem
+100 poke 53280,6:poke 53281,1
+110 def fn r(x)=int(x*1e4+.5)/1e4
+120 print chr$(147);chr$(144)
+130 print tab(10);"quadratic equations"
+140 print tab(10);"==================="
+150 print:print tab(5);"solves a*x^2 + b*x + c = 0"
+160 print
+170 input "  a";a
+180 input "  b";b
+190 input "  c";c
+200 rem build the equation as text
+210 e$="":v=a:t$="x^2":gosub 800
+220 v=b:t$="x":gosub 800
+230 v=c:t$="":gosub 800
+240 if e$="" then e$="0"
+250 print:print "  equation: ";e$;" = 0"
+260 print
+270 if a=0 then 400
+280 d=b*b-4*a*c
+290 print "  discriminant d =";fn r(d)
+300 print
+310 if d>0 then gosub 500
+320 if d=0 then gosub 600
+330 if d<0 then gosub 700
+340 goto 450
+400 rem a=0: not a quadratic
+410 if b<>0 then print "  linear: x =";fn r(-c/b):goto 450
+420 if c=0 then print "  every x is a solution.":goto 450
+430 print "  no solution."
+450 print:print "  another one (y/n)?"
+460 get k$:if k$="" then 460
+470 if k$="y" then 120
+480 end
+500 rem two real roots
+510 q=sqr(d):x1=(-b+q)/(2*a):x2=(-b-q)/(2*a)
+520 print "  two real roots:"
+530 print "  x1 =";fn r(x1):print "  x2 =";fn r(x2)
+540 x=x1:gosub 900
+550 return
+600 rem one double root
+610 x1=-b/(2*a)
+620 print "  one double root:":print "  x =";fn r(x1)
+630 x=x1:gosub 900
+640 return
+700 rem two complex roots
+710 re=-b/(2*a):im=abs(sqr(-d)/(2*a))
+720 print "  two complex roots:"
+730 i$=mid$(str$(fn r(im)),2)+"i"
+740 print "  x1 =";fn r(re);"+ ";i$:print "  x2 =";fn r(re);"- ";i$
+750 return
+800 rem add the term v*t$ to e$
+810 if v=0 then return
+820 n$=mid$(str$(abs(v)),2)
+830 if abs(v)=1 and t$<>"" then n$=""
+840 s$=" + ":if v<0 then s$=" - "
+850 if e$="" then s$="":if v<0 then s$="-"
+860 e$=e$+s$+n$+t$
+870 return
+900 rem check: put x back into the equation
+910 print "  check: a*x^2+b*x+c =";fn r(a*x*x+b*x+c)
+920 return
+</script>
+
+<h2>A little maths first</h2>
+
+<p>Every quadratic equation can be solved with the same formula:</p>
+<div class="c64-screen"><pre>     -B + SQR(D)          -B - SQR(D)
+X1 = -----------     X2 = -----------
+         2*A                  2*A
+
+where D = B*B - 4*A*C</pre></div>
+<p><em>D</em>, the discriminant, decides everything. If it is positive there are two different real roots. If it is zero the two roots meet in one, a double root. If it is negative there is no real square root of <em>D</em>, and the roots are complex numbers: a real part plus or minus an imaginary part, written with <em>i</em>, the square root of &minus;1.</p>
+
+<h2>How it works</h2>
+
+<table class="data">
+  <thead><tr><th>Lines</th><th>Block</th></tr></thead>
+  <tbody>
+    <tr><td>100&ndash;190</td><td>Setup, the rounding function, input</td></tr>
+    <tr><td>200&ndash;340</td><td>The equation as text, the discriminant, which case</td></tr>
+    <tr><td>400&ndash;480</td><td>When <em>a</em> is 0, and &ldquo;another one?&rdquo;</td></tr>
+    <tr><td>500&ndash;750</td><td>Three subroutines: real, double and complex roots</td></tr>
+    <tr><td>800&ndash;870</td><td>Subroutine: add one term to the equation text</td></tr>
+    <tr><td>900&ndash;920</td><td>Subroutine: check a root</td></tr>
+  </tbody>
+</table>
+
+<h3>Line 110: a function of your own</h3>
+<p><code>DEF FN R(X)</code> defines a one-line function that rounds to four decimal places: multiply by 10,000, add a half, cut off the fraction, divide back. Why bother? The C64 stores numbers in binary with about nine significant digits, and most decimals cannot be stored exactly. Solve <em>x&sup2; + x &minus; 1 = 0</em> without rounding and put the root back in: the C64 says the result is <code>4.65661287E-10</code>, not 0. That is 0.000000000466, a rounding error in the ninth digit. <code>FN R</code> hides that noise, and the check prints a clean 0.</p>
+
+<h3>Lines 170&ndash;190: INPUT</h3>
+<p><code>INPUT "  A";A</code> prints the text, adds a question mark and waits for a number and <kbd>RETURN</kbd>. Type something that is not a number and the C64 answers <code>?REDO FROM START</code> and asks again, so the program never has to check.</p>
+
+<h3>Lines 200&ndash;250 and 800&ndash;870: writing the equation</h3>
+<p>Printing <code>1X^2+-5X+6</code> would be correct and ugly. The subroutine at 800 adds one term at a time to <code>E$</code> and writes it the way a person would:</p>
+<ul>
+  <li>A term with coefficient 0 is left out completely (line 810).</li>
+  <li><code>STR$</code> puts a space in front of positive numbers, the place where the minus sign would go. <code>MID$(STR$(ABS(V)),2)</code> takes the number without its sign and without that space (line 820).</li>
+  <li>A coefficient of 1 is not written in front of x: <em>x&sup2;</em>, not <em>1x&sup2;</em>. The constant term keeps its 1 (line 830).</li>
+  <li>Between terms the sign gets a space on each side; the first term gets just a minus, or nothing (lines 840&ndash;850).</li>
+</ul>
+<p><code>E$</code> is emptied on line 210 before every new equation. If all three numbers are 0 nothing is added, and line 240 writes &ldquo;0&rdquo; so the screen does not say <em>EQUATION:&nbsp; = 0</em>.</p>
+
+<h3>Lines 280&ndash;340: choosing the case</h3>
+<p>The discriminant is worked out once and printed, then exactly one of three subroutines runs. Each one prints its roots and returns, and line 340 jumps over the a&nbsp;=&nbsp;0 block to the question at the end.</p>
+
+<h3>Lines 500&ndash;640: real roots and the check</h3>
+<p>The two subroutines are the formula, line for line. Each then puts the first root back into the equation through the subroutine at 900. If the result is 0, the root is right: the program checks its own answer, which is a good habit in any language.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="The C64 solving x squared minus 2x plus 5: discriminant -16, roots 1 + 2I and 1 - 2I" height="545" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/quadratic/quadratic-complex.png" style="display:block;width:100%;max-width:718px;height:auto;margin:0 auto;border:3px solid #706deb;" width="718" /></td></tr><tr><td class="tr-caption" style="text-align:center;">A negative discriminant: two complex roots, 1 &plusmn; 2i.</td></tr></tbody></table>
+
+<h3>Lines 700&ndash;750: complex roots</h3>
+<p>BASIC V2 has no complex numbers, but it does not need them. The real part is <em>&minus;b/2a</em> and the imaginary part is <em>&radic;(&minus;D)/2a</em>, both ordinary numbers. <code>ABS</code> keeps the imaginary part positive even when <em>a</em> is negative, so the screen shows <em>1 + 2i</em> and <em>1 &minus; 2i</em>, never <em>1 + -2i</em>. Line 730 turns it into a string with no leading space, so the <em>i</em> sits right after the number.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="The C64 solving 2x minus 4 = 0: linear, x = 2" height="545" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/quadratic/quadratic-linear.png" style="display:block;width:100%;max-width:718px;height:auto;margin:0 auto;border:3px solid #706deb;" width="718" /></td></tr><tr><td class="tr-caption" style="text-align:center;">With a = 0 the program writes the equation as 2x &minus; 4 = 0 and solves it as a linear one.</td></tr></tbody></table>
+
+<h3>Lines 400&ndash;430: when a is 0</h3>
+<p>With <em>a</em> = 0 the formula would divide by zero. The equation is then <em>bx + c = 0</em>, and there are three possibilities: one solution <em>x = &minus;c/b</em>; no <em>x</em> at all (5 = 0 can never be true); or every <em>x</em> (0 = 0 always is).</p>
+
+<h3>Lines 450&ndash;480: another one?</h3>
+<p><code>GET</code> reads a single key without needing <kbd>RETURN</kbd>, and line 460 loops until there is one. <kbd>Y</kbd> clears the screen and starts again; any other key ends the program.</p>
+
+<h2>Numbers to try</h2>
+
+<table class="data">
+  <thead><tr><th>a</th><th>b</th><th>c</th><th>Equation</th><th>The C64 says</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>-5</td><td>6</td><td>x&sup2; &minus; 5x + 6 = 0</td><td>x1 = 3, x2 = 2</td></tr>
+    <tr><td>1</td><td>-4</td><td>4</td><td>x&sup2; &minus; 4x + 4 = 0</td><td>double root x = 2</td></tr>
+    <tr><td>1</td><td>-2</td><td>5</td><td>x&sup2; &minus; 2x + 5 = 0</td><td>x = 1 &plusmn; 2i</td></tr>
+    <tr><td>1</td><td>1</td><td>-1</td><td>x&sup2; + x &minus; 1 = 0</td><td>x1 = .618, x2 = &minus;1.618</td></tr>
+    <tr><td>-1</td><td>0</td><td>4</td><td>&minus;x&sup2; + 4 = 0</td><td>x1 = &minus;2, x2 = 2</td></tr>
+    <tr><td>0</td><td>2</td><td>-4</td><td>2x &minus; 4 = 0</td><td>linear: x = 2</td></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>0 = 0</td><td>every x is a solution</td></tr>
+    <tr><td>0</td><td>0</td><td>5</td><td>5 = 0</td><td>no solution</td></tr>
+  </tbody>
+</table>
+
+<p>The fourth one is special: 1.618 is the golden ratio, and .618 is one over it. The C64 leaves out the 0 before the decimal point, and puts a negative number's minus sign in the space where a positive number has its blank, which is why you see <code>X2 =-1.618</code>.</p>
+
+<h2>Try this</h2>
+<ul>
+  <li><strong>More decimals:</strong> change both <code>1E4</code> in line 110 to <code>1E6</code>.</li>
+  <li><strong>Check the second root too:</strong> add <code>:X=X2:GOSUB 900</code> to the end of line 540.</li>
+  <li><strong>Check complex roots:</strong> harder, since BASIC has no <em>i</em>. Hint: for <em>x = p + qi</em>, the real part of <em>ax&sup2; + bx + c</em> is <em>a(p&sup2; &minus; q&sup2;) + bp + c</em> and the imaginary part is <em>(2ap + b)q</em>. Both should be 0.</li>
+</ul>
+
+<h2>Run it</h2>
+<p>Press <span class="cmd">&darr; .PRG</span> on the listing and drop the file on a VICE window. Source and program are also on <a href="https://github.com/c64n/c64-coding/tree/main/listings/quadratic" rel="noopener">GitHub</a>.</p>
+
+<p>Three equations, typed in and solved in VICE:</p>
+<iframe allowfullscreen="" frameborder="0" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/Xx1kqtxLHrw?rel=0" title="QUADRATIC: solving equations on the Commodore 64 (VICE)"></iframe>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><a href="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/quadratic/quadratic-lab.png"><img alt="VS Code with QUADRATIC.bas open next to VICE listing the program" height="704" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/quadratic/quadratic-lab.png" style="display:block;width:100%;height:auto;margin:0 auto;border:3px solid #706deb;" width="1363" /></a></td></tr><tr><td class="tr-caption" style="text-align:center;">In the lab: QUADRATIC.bas in VS Code, and the same lines listed on the C64.</td></tr></tbody></table>

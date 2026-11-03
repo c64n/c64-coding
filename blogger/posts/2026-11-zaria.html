@@ -1,0 +1,174 @@
+<!--
+  POST:    ZARIA: Three Dice on the Commodore 64
+  LABELS:  Listing, Games
+  PERMALINK: keep the existing one (/2026/11/zaria-three-dice-on-commodore-64.html)
+  Paste in Blogger: open the post > pencil icon > HTML view > replace everything. Images load from the GitHub repo (raw.githubusercontent.com).
+-->
+
+<div class="info-card">
+  <p class="info-card-title">ZARIA</p>
+  <dl>
+    <dt>Type</dt><dd>Game</dd>
+    <dt>Language</dt><dd>Commodore BASIC V2</dd>
+    <dt>Length</dt><dd>49 lines &middot; 7 blocks (1,615 bytes)</dd>
+    <dt>Keys</dt><dd>Any key rolls, <kbd>Q</kbd> quits</dd>
+    <dt>Special keys</dt><dd>None, everything is typed as CHR$()</dd>
+  </dl>
+</div>
+
+<p><em>Zaria</em> is Greek for dice. Press a key and three dice tumble across the screen, slowing down with a rattle from the SID, until they land and the C64 adds them up. Doubles and triples get called out. It is a short program, but it touches most of what makes the C64 screen fun to work with in BASIC: reverse video, cursor control codes, PETSCII graphics, and a sound chip that is one POKE away.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="Animation: three white dice tumble on a black screen, land on six, three and three, and the C64 shows total 12 and DOUBLE" height="542" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/zaria/zaria.gif" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border:3px solid #706deb;" width="720" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Two rolls, recorded in VICE. Each one tumbles for about two seconds before the dice settle.</td></tr></tbody></table>
+
+<!--more-->
+
+<h2>The listing</h2>
+
+<div class="tip"><p>Type every letter <strong>without SHIFT</strong>. The listing is stored in lower case, which is how the C64 sees ordinary upper-case letters. Click each line as you finish it to tick it off, or skip the typing and press <span class="cmd">&darr; .PRG</span>.</p></div>
+
+<script type="text/plain" class="listing" data-name="ZARIA">
+10 rem zaria - three dice for the c64
+20 rem c64 coding - c64n.blogspot.com
+30 rem
+100 r=rnd(-ti):poke 53280,5:poke 53281,0:print chr$(147);chr$(5)
+110 s=54272:for i=0 to 24:poke s+i,0:next
+120 poke s+24,15:poke s+5,9:poke s+6,0
+130 rv$=chr$(18):ro$=chr$(146):pp$=chr$(113)
+140 dn$="":for i=1 to 24:dn$=dn$+chr$(17):next
+150 dim f$(6),d$(6):for i=1 to 6:read f$(i):next
+160 data "000010000","100000001","100010001"
+170 data "101000101","101010101","101101101"
+180 gosub 600
+200 rem title and prompt
+210 print chr$(158);tab(15);"z a r i a":print
+220 print chr$(5);tab(9);"three dice for the c64"
+230 r=8:th=0
+240 print chr$(19);left$(dn$,21);tab(5);chr$(153);
+250 print "press a key to roll, q to quit"
+300 rem wait for a key
+310 get k$:if k$="" then 310
+320 if k$="q" then 900
+330 rem tumble: eight quick throws, slowing down
+340 for t=1 to 8
+350 d1=int(rnd(1)*6)+1:d2=int(rnd(1)*6)+1:d3=int(rnd(1)*6)+1
+360 v=d1:c=8:gosub 500:v=d2:c=17:gosub 500:v=d3:c=26:gosub 500
+370 poke s+4,128:poke s+1,10+t*4:poke s+4,129
+380 for w=1 to t*25:next
+390 next t
+400 rem result
+410 th=th+1:sm=d1+d2+d3:m$=""
+420 if d1=d2 or d2=d3 or d1=d3 then m$="double!"
+430 if d1=d2 and d2=d3 then m$="triple!"
+440 print chr$(19);left$(dn$,15);tab(8);chr$(5);"total";sm;
+450 print "   ";chr$(158);m$;"        "
+460 print chr$(19);left$(dn$,17);tab(8);chr$(152);"throw";th
+470 goto 310
+500 rem draw die v with its left edge at column c, top at row r
+510 print chr$(19);left$(dn$,r);tab(c);d$(v):return
+600 rem build each face as one string: 5 rows of 5 cells
+610 nl$=chr$(17):for i=1 to 5:nl$=nl$+chr$(157):next
+620 for v=1 to 6:b$=chr$(5)+rv$+"     "+nl$
+630 for y=1 to 3:b$=b$+" "
+640 for x=1 to 3:if mid$(f$(v),y*3-3+x,1)="1" then b$=b$+pp$:goto 660
+650 b$=b$+" "
+660 next x:b$=b$+" "+nl$:next y
+670 d$(v)=b$+"     "+ro$:next v:return
+900 rem quit: sound off, colours back
+910 poke s+24,0:poke 53280,14:poke 53281,6
+920 print chr$(147);chr$(154);"thanks for rolling!":end
+</script>
+
+<div class="warn"><p>Lines 620 and 670 have <strong>five spaces</strong> between the quotes, and lines 210 and 450 have spaces that matter too. Line 650 is not a typo: it is the &ldquo;else&rdquo; of line 640.</p></div>
+
+<h2>How it works</h2>
+
+<p>The program is built in seven blocks, each starting on a round line number with a remark, so you can find your way around it with <span class="cmd">LIST 600-670</span> and friends.</p>
+
+<table class="data">
+  <thead><tr><th>Lines</th><th>Block</th></tr></thead>
+  <tbody>
+    <tr><td>100&ndash;180</td><td>Setup: random seed, colours, the SID, control codes, the six faces</td></tr>
+    <tr><td>200&ndash;250</td><td>Title and prompt</td></tr>
+    <tr><td>300&ndash;390</td><td>Wait for a key, then the tumble</td></tr>
+    <tr><td>400&ndash;470</td><td>The result: total, doubles, triples, throw counter</td></tr>
+    <tr><td>500&ndash;510</td><td>Subroutine: draw one die</td></tr>
+    <tr><td>600&ndash;670</td><td>Subroutine: build the six dice as strings, once</td></tr>
+    <tr><td>900&ndash;920</td><td>Quit</td></tr>
+  </tbody>
+</table>
+
+<h3>Line 100: seed and colours</h3>
+<p><code>R=RND(-TI)</code> seeds the random number generator from <code>TI</code>, the jiffy clock that has been counting sixtieths of a second since power-on. A negative argument to RND starts a new sequence, so no two sessions roll the same dice. Then a green border (5 into 53280), a black background (0 into 53281), <code>CHR$(147)</code> to clear the screen and <code>CHR$(5)</code> for white text.</p>
+
+<h3>Lines 110&ndash;120: one voice of the SID</h3>
+<p>The SID has 25 write registers starting at 54272. Line 110 sets them all to zero, so nothing left over from an earlier program can spoil the sound. Line 120 turns the volume up (register 24), and gives voice 1 an attack of 0 and a decay of 9 (register 5) with no sustain (register 6). Every note will start at full volume and die away on its own in a fraction of a second: a click, not a tone.</p>
+
+<h3>Lines 130&ndash;140: control codes in strings</h3>
+<p>BASIC V2 has no command to move the cursor to a row and column, but PRINT understands control codes. <code>CHR$(19)</code> sends the cursor home to the top left, and each <code>CHR$(17)</code> moves it one row down. Line 140 builds <code>DN$</code>, a string of 24 cursor-downs, so <code>PRINT CHR$(19);LEFT$(DN$,15);TAB(8)</code> puts the cursor on row 15, column 8. The program uses this everywhere, which is why every throw lands in exactly the same place and the screen never scrolls.</p>
+<p><code>RV$</code> and <code>RO$</code> are reverse on and reverse off, <code>CHR$(18)</code> and <code>CHR$(146)</code>. <code>PP$</code> is <code>CHR$(113)</code>, the filled circle you get with <kbd>SHIFT</kbd> + <kbd>Q</kbd>: the pip.</p>
+
+<h3>Lines 150&ndash;170: six faces in nine characters each</h3>
+<p>Each face is a 3&times;3 grid, read row by row, with 1 for a pip and 0 for blank. The face for five, <code>"101010101"</code>, is:</p>
+<div class="c64-screen"><pre>1 0 1
+0 1 0
+1 0 1</pre></div>
+<p>Keeping the faces as DATA means the rest of the program does not care which number it draws. Want different pips? Change the DATA, not the program.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="ZARIA title screen: yellow title, white subtitle and a green prompt on a black screen with a green border" height="540" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/zaria/zaria-title.png" style="display:block;width:100%;max-width:712px;height:auto;margin:0 auto;border:3px solid #706deb;" width="712" /></td></tr><tr><td class="tr-caption" style="text-align:center;">The title screen, before the first roll. The dice are already built and waiting in memory.</td></tr></tbody></table>
+
+<h3>Lines 600&ndash;670: a whole die in one string</h3>
+<p>Line 180 calls this subroutine once, before the title appears. It turns each 3&times;3 pattern into a single string that draws the complete die, five rows of five characters. <code>NL$</code> is the trick: one cursor-down, <code>CHR$(17)</code>, and five cursor-lefts, <code>CHR$(157)</code>. Printed after a row of five characters, it puts the cursor right under the start of that row, ready for the next one. So <code>D$(V)</code> holds the colour code, reverse on, the top edge, then each row of pips followed by <code>NL$</code>, then the bottom edge and reverse off: about 50 characters that draw a die wherever the cursor happens to be.</p>
+<p>The middle rows are built from the face string with <code>MID$(F$(V),Y*3-3+X,1)</code>: a reversed space at each side, and between them a pip or a space for each of the three characters. BASIC V2 has no ELSE, so line 640 adds a pip and jumps past line 650 with <code>GOTO 660</code>; if the character is not a 1, the IF fails, the rest of line 640 is skipped and line 650 adds a space instead.</p>
+<p>Here is the trick that makes it look like a die: a reversed space is a solid white block, and a <em>reversed</em> circle is a white block with a black circle cut out of it. So the die is white and the pips are holes that show the black screen behind. No graphics mode, no sprites, just reverse video.</p>
+
+<h3>Lines 500&ndash;510: drawing a die</h3>
+<p>With the strings ready, drawing a die is one PRINT: home, down to row <code>R</code>, across to column <code>C</code>, then <code>D$(V)</code>. Building the strings once and printing them many times is much faster than working out every pip on every throw, and speed matters here: the tumble draws 24 dice per roll.</p>
+
+<h3>Lines 310&ndash;320: waiting for a key</h3>
+<p><code>GET K$</code> reads the keyboard without stopping, and returns an empty string when no key is pressed, so line 310 loops on itself until a key arrives. <kbd>Q</kbd> goes to the exit, anything else rolls.</p>
+
+<h3>Lines 340&ndash;390: the tumble</h3>
+<p>Eight throws in a row, drawn on top of each other. Each one plays a click: 128 into register 4 selects the noise waveform with the gate closed, the next POKE sets the pitch, and 129 opens the gate, which starts a new note. The pitch rises a little with every throw (<code>10+T*4</code>), and the pause after it gets longer (<code>T*25</code>), so the dice rattle quickly and then slow down, like real ones settling on a table. The eighth throw is the one that counts.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img loading="lazy" alt="ZARIA on a Commodore 64: three white dice showing six, six and four, total 16, double" height="544" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/zaria/zaria-roll.png" style="display:block;width:100%;max-width:717px;height:auto;margin:0 auto;border:3px solid #706deb;" width="717" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Six, six and four: total 16, and a double. Running in VICE.</td></tr></tbody></table>
+
+<h3>Lines 410&ndash;460: the result</h3>
+<p><code>SM</code> is the total of the three dice. Line 420 checks the three possible pairs for a double, and line 430 upgrades it to a triple when all three match. The message is printed in yellow, followed by eight spaces that wipe out whatever a longer message left there on the previous throw. A total can drop from two digits to one, too, which would shift everything one column left; the spaces take care of that as well.</p>
+
+<h3>Lines 900&ndash;920: leaving tidily</h3>
+<p>Volume to zero, so the SID does not keep humming, and the C64's own colours back: light blue border (14) on a blue screen (6), with light blue text from <code>CHR$(154)</code>. A program that cleans up after itself is a nice program to type in.</p>
+
+<h2>Variables</h2>
+
+<table class="data">
+  <thead><tr><th>Name</th><th>Holds</th></tr></thead>
+  <tbody>
+    <tr><td>S</td><td>54272, the first SID register</td></tr>
+    <tr><td>RV$, RO$, PP$</td><td>reverse on, reverse off, the pip</td></tr>
+    <tr><td>DN$</td><td>24 cursor-down codes</td></tr>
+    <tr><td>F$(1)&ndash;F$(6)</td><td>the six faces as 3&times;3 patterns</td></tr>
+    <tr><td>D$(1)&ndash;D$(6)</td><td>the six dice, each ready to PRINT</td></tr>
+    <tr><td>NL$, B$</td><td>cursor down and back to the start of the row; the die being built</td></tr>
+    <tr><td>D1, D2, D3</td><td>the three dice</td></tr>
+    <tr><td>SM, M$, TH</td><td>total, message, number of throws</td></tr>
+    <tr><td>V, C, R</td><td>face, column and row for the drawing subroutine</td></tr>
+    <tr><td>T, W, X, Y, I</td><td>loop counters</td></tr>
+    <tr><td>K$</td><td>key pressed</td></tr>
+  </tbody>
+</table>
+
+<h2>Try this</h2>
+<ul>
+  <li><strong>Loaded dice:</strong> in line 350, replace the formula for <code>D3</code> with <code>D3=6</code>. See who notices.</li>
+  <li><strong>A longer tumble:</strong> change the 8 in line 340 to 12, or the 25 in line 380 to 40 for a slower one.</li>
+  <li><strong>Other colours:</strong> <code>CHR$(28)</code> instead of <code>CHR$(5)</code> in line 620 gives red dice, and they keep their black pips.</li>
+  <li><strong>Galileo's question:</strong> with three dice, does 10 come up more often than 9? Both can be made in six ways, yet gamblers in the 1600s noticed 10 wins. Galileo explained why: counting the order of the dice, 10 has 27 combinations out of 216 and 9 only 25. Add a counter for each total and roll a few hundred times to see it for yourself.</li>
+</ul>
+
+<h2>Run it</h2>
+<p>Press <span class="cmd">&darr; .PRG</span> on the listing and drop the file onto a <a href="https://vice-emu.sourceforge.io/" rel="noopener">VICE</a> window, or type it in and enter <span class="cmd">RUN</span>. The source and the ready-made program are also on <a href="https://github.com/c64n/c64-coding/tree/main/listings/zaria" rel="noopener">GitHub</a>.</p>
+
+<p>With the sound on, you can hear the dice rattle and slow down:</p>
+<iframe allowfullscreen="" frameborder="0" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/lFGR9E6wPSw?rel=0" title="ZARIA: three dice on the Commodore 64 (VICE)"></iframe>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><a href="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/zaria/zaria-lab.png"><img alt="VS Code with ZARIA.bas open next to VICE listing the program" height="704" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/zaria/zaria-lab.png" style="display:block;width:100%;height:auto;margin:0 auto;border:3px solid #706deb;" width="1438" /></a></td></tr><tr><td class="tr-caption" style="text-align:center;">In the lab: ZARIA.bas in VS Code, and the same lines listed on the C64 after quitting.</td></tr></tbody></table>

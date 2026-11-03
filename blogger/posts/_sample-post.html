@@ -1,0 +1,63 @@
+<!--
+  C64 theme — sample post (paste in Blogger: Post > HTML view)
+  Labels for this post:  Listing, Games, Disk: Games Disk 1
+  - "Listing"        -> appears in the home Disk directory
+  - "Disk: <name>"   -> groups programs into a disk in the home Disk box (optional)
+  - any other label  -> category filter (Games, Graphics, Music, Utilities...)
+  - "Guide", "Errata", "Emulators", "News" -> Extras cards on the home page
+-->
+
+<div class="info-card">
+  <p class="info-card-title">SNAKE</p>
+  <dl>
+    <dt>Language</dt><dd>Commodore BASIC V2</dd>
+    <dt>Length</dt><dd>7 lines &middot; 1 block</dd>
+    <dt>Keys</dt><dd>Any key to start</dd>
+    <dt>Tested in</dt><dd>VICE 3.10 (x64sc), PAL</dd>
+  </dl>
+</div>
+
+<p>A short intro about the program. Type <span class="cmd">RUN</span> and press <kbd>RETURN</kbd>. Function keys: <kbd class="fn">F1</kbd>.</p>
+
+<!--more-->
+
+<h2>The listing</h2>
+
+<!-- Option A (recommended): raw paste, no need to escape < > & -->
+<script type="text/plain" class="listing" data-name="SNAKE">
+10 REM *** SNAKE CHASE ***
+20 POKE 53280,0:POKE 53281,0
+30 PRINT "{CLR}{WHT}{3 DOWN}  SNAKE CHASE{RVS ON} 1983 {RVS OFF}"
+40 FOR I=1 TO 10:READ A(I):NEXT I
+50 IF A(1)<5 THEN PRINT "{YEL}TOO EASY":GOTO 40
+60 DATA 1,2,3,4,5,6,7,8,9,10
+70 GET K$:IF K$="" THEN 70
+</script>
+
+<!-- Option B: <pre> (here < must be written &lt; and > as &gt;)
+<pre class="listing" data-name="SNAKE">
+50 IF A(1)&lt;5 THEN PRINT "{YEL}TOO EASY"
+</pre>
+-->
+
+<h2>What you will see</h2>
+<div class="c64-screen"><pre>SNAKE CHASE 1983
+
+READY.</pre></div>
+
+<div class="tip"><p>Save before you RUN: <span class="cmd">SAVE"SNAKE",8</span></p></div>
+<div class="warn"><p>Line 40 uses the letter O, not zero, in "TO".</p></div>
+<div class="errata"><p>Line 50 read <code>A(1)&gt;5</code> in the first version of this post; the listing above is corrected.</p></div>
+
+<h2>How it works</h2>
+<h3>Lines 10-30</h3>
+<p>Explanation...</p>
+
+<!--
+  Home page info box (Layout > hub-info > Add gadget > HTML/JavaScript):
+  <div class="info-card">
+    <p class="info-card-title">ON THIS DISK</p>
+    <dl><dt>Programs</dt><dd>3</dd><dt>Machine</dt><dd>Commodore 64 PAL</dd><dt>Tested in</dt><dd>VICE 3.8</dd></dl>
+    <p class="info-card-status">NEW LISTING EVERY WEEK</p>
+  </div>
+-->

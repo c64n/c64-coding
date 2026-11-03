@@ -1,0 +1,106 @@
+<!--
+  PAGE:  History   (Blogger > Pages > New page, title exactly "History" so the URL is /p/history.html)
+  Paste in HTML view.
+-->
+
+<div class="c64-screen"><pre>    **** COMMODORE 64 BASIC V2 ****
+
+ 64K RAM SYSTEM  38911 BASIC BYTES FREE
+
+READY.</pre></div>
+
+<p>Every listing on this site was written for one machine: the Commodore 64. It was announced in January 1982, sold for twelve years, and by most estimates became the best-selling single computer model ever made. This page is a short history of the machine, with the sources at the bottom so you can read further.</p>
+
+<div class="info-card">
+  <p class="info-card-title">THE COMMODORE 64 AT A GLANCE</p>
+  <dl>
+    <dt>Announced</dt><dd>January 1982, Consumer Electronics Show, Las Vegas <a href="#ref-1">[1]</a></dd>
+    <dt>On sale</dt><dd>August 1982, US$595 <a href="#ref-1">[1]</a></dd>
+    <dt>Processor</dt><dd>MOS 6510, 1.023 MHz (NTSC) / 0.985 MHz (PAL) <a href="#ref-1">[1]</a></dd>
+    <dt>Memory</dt><dd>64 KB RAM, 20 KB ROM; 38,911 bytes free for BASIC</dd>
+    <dt>Graphics</dt><dd>VIC-II: 320&times;200, 16 colours, 8 hardware sprites <a href="#ref-1">[1]</a></dd>
+    <dt>Sound</dt><dd>SID: 3 voices, 4 waveforms, ADSR envelopes, filter <a href="#ref-1">[1]</a></dd>
+    <dt>Language</dt><dd>Commodore BASIC V2, licensed from Microsoft <a href="#ref-4">[4]</a></dd>
+    <dt>Sold</dt><dd>12.5 to 17 million, depending on the estimate <a href="#ref-1">[1]</a></dd>
+    <dt>Discontinued</dt><dd>April 1994 <a href="#ref-1">[1]</a></dd>
+  </dl>
+</div>
+
+<!--more-->
+
+<h2>From typewriters to chips</h2>
+
+<p>Commodore began in 1955 as a typewriter sales and repair business founded by Jack Tramiel, a Holocaust survivor from Łódź who had learned typewriter repair in the US Army <a href="#ref-5">[5]</a>. By the late 1970s it made calculators and computers, and it owned its own chip maker, MOS Technology, in West Chester, Pennsylvania. That factory is the reason the C64 exists in the form it does.</p>
+
+<p>In January 1981, engineers at MOS started work on two new chips: a graphics chip, led by Albert Charpentier, and a sound chip, led by Robert &ldquo;Bob&rdquo; Yannes. They were meant for a video game console. Because MOS had its own fabrication line, the team could try a design, fix it and try again quickly, and both chips were finished by mid-November 1981 <a href="#ref-2">[2]</a>.</p>
+
+<h2>Five weeks to CES</h2>
+
+<p>In late November 1981, Tramiel dropped the games console. He wanted a home computer with 64 KB of memory, ready for the Consumer Electronics Show in January, betting that memory chips would soon be cheap enough to make that affordable <a href="#ref-2">[2]</a>. The team laid out the architecture in two days and built five working prototypes over the holidays. The machine was shown at CES in Las Vegas in January 1982, where it had been renamed from its code name, VIC-40 <a href="#ref-1">[1]</a> <a href="#ref-2">[2]</a>. Production started in the spring, and the Commodore 64 went on sale in August 1982 at US$595 <a href="#ref-1">[1]</a>.</p>
+
+<h2>The chips that made it special</h2>
+
+<h3>VIC-II: graphics</h3>
+<p>The VIC-II drew a 320&times;200 screen in 16 colours and handled eight hardware sprites, movable images that the chip draws on top of the screen by itself <a href="#ref-1">[1]</a>. The sprites took up about two-thirds of the chip <a href="#ref-2">[2]</a>.</p>
+
+<h3>SID: sound</h3>
+<p>Yannes wanted a real synthesizer on a chip, not a beeper. The SID has three independent voices, four waveforms each, ADSR envelopes, ring modulation and a multimode filter <a href="#ref-1">[1]</a> <a href="#ref-3">[3]</a>. Time and chip area were tight, and Yannes himself was frank about the compromises:</p>
+<blockquote>&ldquo;The filter is the worst part of SID because I could not create high-gain op-amps in NMOS.&rdquo; <a href="#ref-3">[3]</a></blockquote>
+<p>The filter also behaved differently from one production run of chips to the next <a href="#ref-3">[3]</a>, so two C64s playing the same tune do not always sound the same.</p>
+
+<h2>BASIC V2, and why we POKE</h2>
+
+<p>In 1977 Commodore licensed BASIC from Microsoft for a single payment of $25,000, with no royalties per machine <a href="#ref-4">[4]</a> <a href="#ref-6">[6]</a>. The C64 got the same BASIC V2 that the earlier PET and VIC-20 used. It fitted in a small ROM, which kept costs down, but it had no commands for graphics or sound <a href="#ref-4">[4]</a>.</p>
+
+<p>So every program that wanted colour, sprites or music had to write numbers straight into the chips' registers with <code>POKE</code>. That is exactly what <a href="/2026/11/the-bouncing-ball-animation-with-poke.html">the Bouncing Ball</a> does: <code>POKE 53280</code> for the border, <code>POKE 54272</code> and up for the SID. It made C64 listings harder to read, and it taught a generation how the hardware really worked.</p>
+
+<p>In September 2025 Microsoft released the source code of its 6502 BASIC, the family that Commodore BASIC descends from, as open source <a href="#ref-6">[6]</a>.</p>
+
+<h2>The price war</h2>
+
+<p>The C64 launched at $595. Commodore owned its chip supply, so it could cut prices faster than anyone else, and it did <a href="#ref-1">[1]</a>:</p>
+
+<table class="data">
+  <thead><tr><th>When</th><th>Price in the US</th></tr></thead>
+  <tbody>
+    <tr><td>August 1982</td><td>$595 at launch</td></tr>
+    <tr><td>January 1983</td><td>$425</td></tr>
+    <tr><td>June 1983</td><td>$300 list, $199 in some stores</td></tr>
+    <tr><td>Early 1985</td><td>$149</td></tr>
+  </tbody>
+</table>
+
+<p>It was sold in department, discount and toy stores, not only in computer shops, and in the mid-1980s held roughly 30 to 40 percent of the US market <a href="#ref-1">[1]</a>. Texas Instruments, which had answered with a $99 TI-99/4A, lost money on every sale and left the home computer business in October 1983 <a href="#ref-1">[1]</a>.</p>
+
+<h2>Type-in culture</h2>
+
+<p>Software was expensive and the internet did not exist, so books and magazines printed programs for readers to type in. <em>Compute!'s Gazette</em>, a magazine only for Commodore owners, ran from July 1983 to 1995 and sold over 200,000 copies a month at its peak <a href="#ref-7">[7]</a>. From October 1983 it printed <em>The Automatic Proofreader</em>, a small program that checked each typed line against a checksum in the magazine, because a single wrong character could stop a program <a href="#ref-7">[7]</a>.</p>
+
+<p>Books around the world did the same, in many languages. The programs on this site are new, but they are written in that tradition: short, readable listings you can type in one sitting. Ticking off lines as you type them here, and the <span class="cmd">&darr; .PRG</span> button, are this site's version of the proofreader.</p>
+
+<h2>Later models and the end</h2>
+
+<table class="data">
+  <thead><tr><th>Year</th><th>Event</th></tr></thead>
+  <tbody>
+    <tr><td>1983</td><td>SX-64, a portable C64 with a built-in colour screen <a href="#ref-1">[1]</a></td></tr>
+    <tr><td>1985</td><td>Commodore 128, compatible with C64 software <a href="#ref-1">[1]</a></td></tr>
+    <tr><td>1986</td><td>Commodore 64C, the same machine in a slimmer case <a href="#ref-1">[1]</a></td></tr>
+    <tr><td>1990</td><td>C64 Games System, a cartridge-only console version <a href="#ref-1">[1]</a></td></tr>
+    <tr><td>March 1994</td><td>Commodore announces the end of the C64; the 1541 disk drive now costs more to make than the computer <a href="#ref-1">[1]</a></td></tr>
+    <tr><td>April 1994</td><td>Commodore files for bankruptcy and production stops <a href="#ref-1">[1]</a></td></tr>
+  </tbody>
+</table>
+
+<p>Commodore's own records suggest about 12.5 million machines were sold; other estimates go up to 17 million, and Guinness lists it as the best-selling desktop computer model <a href="#ref-1">[1]</a>. Whatever the exact number, it is the reason so many type-in listings were written for it, and why the machine is still worth writing for.</p>
+
+<h2>References</h2>
+<ol>
+  <li id="ref-1"><a href="https://en.wikipedia.org/wiki/Commodore_64" rel="noopener">Commodore 64</a>, Wikipedia. Dates, specifications, prices, sales estimates and later models.</li>
+  <li id="ref-2"><a href="https://spectrum.ieee.org/commodore-64" rel="noopener">Creating the Commodore 64: The Engineers' Story</a>, IEEE Spectrum. The chip design at MOS, Tramiel's decision and the CES prototypes.</li>
+  <li id="ref-3"><a href="https://landley.net/history/mirror/commodore/yannes.html" rel="noopener">Interview with Bob Yannes</a>, designer of the SID.</li>
+  <li id="ref-4"><a href="https://en.wikipedia.org/wiki/Commodore_BASIC" rel="noopener">Commodore BASIC</a>, Wikipedia. The Microsoft licence and BASIC V2.</li>
+  <li id="ref-5"><a href="https://computerhistory.org/profile/jack-tramiel/" rel="noopener">Jack Tramiel</a>, Computer History Museum.</li>
+  <li id="ref-6"><a href="https://opensource.microsoft.com/blog/2025/09/03/microsoft-open-source-historic-6502-basic/" rel="noopener">Bringing BASIC back: Microsoft's 6502 BASIC is now Open Source</a>, Microsoft Open Source Blog, 3 September 2025.</li>
+  <li id="ref-7"><a href="https://en.wikipedia.org/wiki/Compute!%27s_Gazette" rel="noopener">Compute!'s Gazette</a>, Wikipedia.</li>
+</ol>

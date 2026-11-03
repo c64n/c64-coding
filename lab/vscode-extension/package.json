@@ -1,0 +1,33 @@
+{
+  "name": "c64-basic-v2-syntax",
+  "displayName": "C64 BASIC V2 Syntax",
+  "description": "Syntax highlighting for C64 BASIC V2 listings",
+  "version": "0.1.0",
+  "publisher": "local-c64",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "c64basic",
+        "aliases": [
+          "Commodore BASIC V2"
+        ],
+        "extensions": [
+          ".bas"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "c64basic",
+        "scopeName": "source.c64basic",
+        "path": "./syntaxes/c64.tmLanguage.json"
+      }
+    ]
+  }
+}

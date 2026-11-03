@@ -1,0 +1,124 @@
+<!--
+  POST:    The Bouncing Ball: Animation with POKE
+  LABELS:  Listing, Graphics
+  PERMALINK: keep the existing one (/2026/11/the-bouncing-ball-animation-with-poke.html)
+  Paste in Blogger: open the post > HTML view > replace everything. Images load from the GitHub repo.
+-->
+
+<div class="info-card">
+  <p class="info-card-title">THE BOUNCING BALL</p>
+  <dl>
+    <dt>Type</dt><dd>Graphics</dd>
+    <dt>Language</dt><dd>Commodore BASIC V2</dd>
+    <dt>Length</dt><dd>30 lines &middot; 4 blocks (956 bytes)</dd>
+    <dt>Keys</dt><dd><kbd>+</kbd> faster, <kbd>-</kbd> slower, <kbd>Q</kbd> quits</dd>
+    <dt>Special keys</dt><dd>None</dd>
+  </dl>
+</div>
+
+<p>The simplest way to move something on the C64 screen: POKE a ball into screen memory, rub out the old one, and do it again one step further on. This ball bounces off all four edges, changes colour every time it hits one, plays a note on the SID and keeps count. You can speed it up and slow it down while it runs.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="Animation: a ball bouncing round a white screen with a blue border, changing colour at every bounce, with a bounce counter at the top" height="543" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/ball/ball.gif" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border:3px solid #706deb;" width="720" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Recorded in VICE. Every bounce brings a new colour and a note. Now and then you may catch two balls for an instant: the new one is drawn just before the old one is erased.</td></tr></tbody></table>
+
+<!--more-->
+
+<h2>The listing</h2>
+
+<div class="tip"><p>Type every letter without SHIFT. Click each line as you finish it to tick it off, or press <span class="cmd">&darr; .PRG</span> for the finished program.</p></div>
+
+<script type="text/plain" class="listing" data-name="BALL">
+10 rem ball - a bouncing ball with sound
+20 rem c64 coding - c64n.blogspot.com
+30 rem
+100 r=rnd(-ti):sc=1024:cm=55296:sd=54272
+110 poke 53280,6:poke 53281,1:print chr$(147);chr$(144);
+120 for i=0 to 24:poke sd+i,0:next:poke sd+24,15:poke sd+5,9
+130 x=int(rnd(1)*38)+1:y=int(rnd(1)*22)+2
+140 dx=1:dy=1:co=0:b=0:dl=20:q=0:if rnd(1)<.5 then dx=-1
+150 print chr$(19);"bounces: 0";tab(22);"+/- speed  q quit";
+200 rem main loop: draw the new ball, then erase the old one
+210 p=sc+40*y+x:poke p,81:poke cm+40*y+x,co
+220 if q>0 then poke q,32
+230 q=p
+240 get k$:if k$="q" then 900
+250 if k$="+" and dl>0 then dl=dl-5
+260 if k$="-" then dl=dl+5
+270 for w=1 to dl:next
+280 h=0:if x+dx<0 or x+dx>39 then dx=-dx:h=1
+290 if y+dy<1 or y+dy>24 then dy=-dy:h=2
+300 if h then gosub 500
+310 x=x+dx:y=y+dy:goto 210
+500 rem bounce: new colour, a note, the counter
+510 b=b+1:co=co+1:if co=16 then co=0
+520 if co=1 then co=2
+530 poke sd+4,0:poke sd+1,10*h+5:poke sd+4,17
+540 print chr$(19);chr$(144);"bounces:";b;
+550 return
+900 rem quit: sound off, colours back
+910 poke sd+24,0:poke 53280,14:poke 53281,6
+920 print chr$(147);chr$(154);"bye!":end
+</script>
+
+<h2>How it works</h2>
+
+<table class="data">
+  <thead><tr><th>Lines</th><th>Block</th></tr></thead>
+  <tbody>
+    <tr><td>100&ndash;150</td><td>Setup: addresses, colours, the SID, a random start, the status line</td></tr>
+    <tr><td>200&ndash;310</td><td>Main loop: draw, erase, keys, wait, bounce, move</td></tr>
+    <tr><td>500&ndash;550</td><td>Subroutine: what happens on a bounce</td></tr>
+    <tr><td>900&ndash;920</td><td>Quit</td></tr>
+  </tbody>
+</table>
+
+<h3>Line 100: three addresses</h3>
+<p>The program keeps three addresses in variables. <code>SC=1024</code> is the start of screen memory: 1,000 bytes, one for each of the 40&times;25 character cells. <code>CM=55296</code> is colour memory, another 1,000 cells, one colour for each character. <code>SD=54272</code> is the first register of the SID, the C64's sound chip.</p>
+
+<table class="data">
+  <thead><tr><th>Memory</th><th>Starts at</th><th>Holds</th></tr></thead>
+  <tbody>
+    <tr><td>Screen memory</td><td>1024</td><td>which character is in each cell</td></tr>
+    <tr><td>SID registers</td><td>54272</td><td>sound</td></tr>
+    <tr><td>Colour memory</td><td>55296</td><td>the colour of each cell</td></tr>
+  </tbody>
+</table>
+
+<p>A curiosity of the memory map: 55296 &minus; 1024 = 54272. The distance from screen memory to colour memory is exactly the SID's address. Many old listings used that to save a variable; this one keeps the three apart so each line says what it means.</p>
+
+<h3>Lines 110&ndash;150: setting the stage</h3>
+<p>Blue border, white background, clear screen, black text. Line 120 zeroes all 25 SID registers, turns the volume up and gives voice 1 a short decay with no sustain, so every note fades out on its own. The ball starts on a random cell, away from the edges, heading down and to the left or right. Row 0 is kept for the status line, so the ball moves only on rows 1 to 24.</p>
+
+<h3>Line 210: drawing with POKE</h3>
+<p><code>P=SC+40*Y+X</code> is the address of the cell in row Y, column X: 40 cells per row. <code>POKE P,81</code> puts a filled circle there and the second POKE gives it its colour. Note that 81 is a <em>screen code</em>, not a PETSCII code. The same circle is <code>CHR$(113)</code> when you PRINT it, as in <a href="/2026/11/zaria-three-dice-on-commodore-64.html">ZARIA</a>; POKE into screen memory uses a different numbering.</p>
+
+<h3>Lines 220&ndash;230: draw first, erase second</h3>
+<p><code>Q</code> remembers where the ball was. The new ball is drawn <em>before</em> the old one is erased with a space (screen code 32), so there is never a moment with no ball on the screen. The C64 redraws the picture 50 times a second (60 in NTSC) whatever the program is doing. If the program erased first and drew second, the VIC-II would sometimes catch the screen in between and the ball would flicker. On the very first pass <code>Q</code> is 0 and there is nothing to erase.</p>
+
+<h3>Lines 240&ndash;270: keys and speed</h3>
+<p><code>GET</code> does not wait, so the ball keeps moving whether you press anything or not. <kbd>+</kbd> shortens the pause of line 270 by 5 (down to none at all) and <kbd>-</kbd> lengthens it. With <code>DL</code> at 0 you see how fast BASIC V2 really is.</p>
+
+<h3>Lines 280&ndash;310: looking ahead</h3>
+<p>Before moving, the program checks where the ball <em>would</em> go. If the next column is off the screen, the horizontal direction flips and <code>H</code> becomes 1; if the next row is, the vertical direction flips and <code>H</code> becomes 2. In BASIC any value other than 0 counts as true, so <code>IF H THEN GOSUB 500</code> plays the bounce. Checking first means the ball never steps outside the screen, not even for one frame.</p>
+
+<h3>Lines 500&ndash;550: the bounce</h3>
+<ul>
+  <li><strong>Colour:</strong> <code>CO</code> runs through the 16 colours, skipping 1, which is white and would vanish on a white background.</li>
+  <li><strong>Sound:</strong> 0 into register 4 closes the gate, the frequency is set, and 17 opens the gate again with the triangle waveform: a soft &ldquo;plink&rdquo;. <code>10*H+5</code> makes the side walls (15) sound lower than the floor and ceiling (25), so you can hear which edge the ball hit.</li>
+  <li><strong>Counter:</strong> the cursor goes home and the count is printed over the old one.</li>
+</ul>
+
+<h2>Try this</h2>
+<ul>
+  <li><strong>Another shape:</strong> change 81 in line 210 to 83 for a heart, 90 for a diamond or 87 for a hollow circle.</li>
+  <li><strong>A trail:</strong> delete line 220 and the ball paints its whole path, in a new colour after every bounce.</li>
+  <li><strong>Another sound:</strong> change 17 in line 530 to 33 for a sawtooth, or 129 for a burst of noise.</li>
+  <li><strong>Flicker on purpose:</strong> swap the order, erasing before drawing, and set the speed to full with <kbd>+</kbd>. Watch the ball closely.</li>
+</ul>
+
+<h2>Run it</h2>
+<p>Press <span class="cmd">&darr; .PRG</span> on the listing and drop the file on a VICE window. Source and program are also on <a href="https://github.com/c64n/c64-coding/tree/main/listings/ball" rel="noopener">GitHub</a>.</p>
+
+<p>With the sound on, you can hear which wall the ball hit:</p>
+<iframe allowfullscreen="" frameborder="0" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/wRbRXAkrrSI?rel=0" title="BALL: a bouncing ball with sound on the Commodore 64 (VICE)"></iframe>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><a href="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/ball/ball-lab.png"><img alt="VS Code with BALL.bas open next to VICE running the program" height="681" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/ball/ball-lab.png" style="display:block;width:100%;height:auto;margin:0 auto;border:3px solid #706deb;" width="1366" /></a></td></tr><tr><td class="tr-caption" style="text-align:center;">In the lab: BALL.bas in VS Code, and VICE running it.</td></tr></tbody></table>

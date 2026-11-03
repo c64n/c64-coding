@@ -1,0 +1,5 @@
+*.bas   text eol=lf
+*.bat   text eol=crlf
+*.prg   binary
+*.png   binary
+*.d64   binary

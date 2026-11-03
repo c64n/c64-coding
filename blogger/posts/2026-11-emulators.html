@@ -1,0 +1,79 @@
+<!--
+  POST:    Running the Programs: VICE, .PRG Files and Real Hardware
+  LABELS:  Emulators
+  Paste in Blogger: New post > HTML view.
+-->
+
+<div class="book-card">
+  <p class="book-card-title">AT A GLANCE</p>
+  <dl>
+    <dt>Emulator</dt><dd>VICE, free, for Windows, macOS and Linux</dd>
+    <dt>Which C64</dt><dd>x64sc, the cycle-exact one</dd>
+    <dt>Run a .PRG</dt><dd>Drag it onto the VICE window</dd>
+    <dt>Real C64</dt><dd>Copy the .PRG to an SD card for an SD2IEC, then LOAD"NAME",8</dd>
+  </dl>
+</div>
+
+<p>Every listing on this site comes with a <span class="cmd">&darr; .PRG</span> button: the finished program, ready to load. This page shows how to run those files in VICE, the emulator used to test every listing here, and on a real Commodore 64.</p>
+
+<!--more-->
+
+<h2>Install VICE</h2>
+
+<ol>
+  <li>Download VICE from <a href="https://vice-emu.sourceforge.io/" rel="noopener">vice-emu.sourceforge.io</a>. On Windows take the GTK3 build for 64-bit Windows; macOS and Linux builds are on the same page.</li>
+  <li>Unzip it anywhere. There is nothing to install, and the C64 ROMs come with it.</li>
+  <li>Start <code>x64sc</code>. VICE ships several emulators; <code>x64sc</code> is the C64, emulated cycle by cycle. A blue screen with <code>READY.</code> means it works.</li>
+</ol>
+
+<h2>Run a .PRG</h2>
+
+<p>Three ways, from simplest to most flexible:</p>
+
+<ul>
+  <li><strong>Drag and drop.</strong> Drag the .PRG file onto the VICE window. VICE resets the C64, loads the program and types RUN for you.</li>
+  <li><strong>Smart attach.</strong> <em>File &gt; Smart attach</em>, pick the file and choose <em>Autostart</em>. The same thing, through a menu.</li>
+  <li><strong>Command line.</strong> <code>x64sc -autostart ZARIA.prg</code>. This is what <a href="/p/the-lab.html">the Lab</a> does after every build.</li>
+</ul>
+
+<div class="tip"><p>When the program has finished loading, type <span class="cmd">LIST</span> to see its listing on the C64 itself, exactly as the C64 stores it.</p></div>
+
+<h2>The keys that are not on your keyboard</h2>
+
+<p>The C64 keyboard has keys a PC does not. VICE maps them to nearby keys. With the default keymap:</p>
+
+<table class="data">
+  <thead><tr><th>C64 key</th><th>On a PC</th><th>Used for</th></tr></thead>
+  <tbody>
+    <tr><td><kbd>RUN/STOP</kbd></td><td><kbd>Esc</kbd></td><td>stop a program or a LIST</td></tr>
+    <tr><td><kbd>RESTORE</kbd></td><td><kbd>Page Up</kbd></td><td>with RUN/STOP: reset the screen, keep the program</td></tr>
+    <tr><td><kbd>CLR/HOME</kbd></td><td><kbd>Home</kbd></td><td>{HOME}, and {CLR} with SHIFT</td></tr>
+    <tr><td><kbd>INST/DEL</kbd></td><td><kbd>Backspace</kbd></td><td>delete, and insert with SHIFT</td></tr>
+  </tbody>
+</table>
+
+<p>The <kbd>C=</kbd> and <kbd>CTRL</kbd> keys, used for colour codes, depend on your keyboard layout and VICE version. <em>Preferences &gt; Settings &gt; Input devices &gt; Keyboard</em> shows the keymap in use, and you can switch between a <em>symbolic</em> map (type the character printed on your PC key) and a <em>positional</em> one (keys sit where they would on a C64).</p>
+
+<h2>Keep what you type</h2>
+
+<p>VICE starts without a disk in the drive, so <code>SAVE"NAME",8</code> has nowhere to go. Before you type in a long listing:</p>
+
+<ol>
+  <li><em>File &gt; Create and attach an empty disk image</em>. Give it a name such as <code>c64coding.d64</code>.</li>
+  <li>Type, and <span class="cmd">SAVE"ZARIA1",8</span> every few minutes.</li>
+  <li>Next time, attach the same .d64 and <span class="cmd">LOAD"$",8</span> then <span class="cmd">LIST</span> to see what is on it.</li>
+</ol>
+
+<p>A snapshot is quicker still: <em>Snapshot &gt; Save snapshot</em> freezes the whole machine, program, screen and all, and <em>Load snapshot</em> brings it back exactly as it was.</p>
+
+<h2>Real hardware</h2>
+
+<p>A .PRG file is exactly what a C64 drive stores, so it runs unchanged on the real machine. The easy routes:</p>
+
+<ul>
+  <li><strong>SD2IEC</strong> and similar SD-card drives: copy the .PRG to the card, then <span class="cmd">LOAD"ZARIA",8</span> and <span class="cmd">RUN</span>.</li>
+  <li><strong>1541 Ultimate, Ultimate 64</strong> and similar cartridges: pick the .PRG from the cartridge menu and run it.</li>
+  <li><strong>Typing it in</strong>, the way it was meant to be: the <a href="/search/label/Guide">type-in guide</a> covers everything you need.</li>
+</ul>
+
+<div class="warn"><p>Programs that POKE into memory can behave differently on NTSC machines, on other emulators, or with fast-loader cartridges switched on. If something looks wrong, try it in VICE <code>x64sc</code> with a PAL C64, the setup every listing here is tested on.</p></div>

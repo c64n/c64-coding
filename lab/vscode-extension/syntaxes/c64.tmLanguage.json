@@ -1,0 +1,32 @@
+{
+  "scopeName": "source.c64basic",
+  "name": "C64 BASIC V2",
+  "patterns": [
+    {
+      "match": "^\\s*\\d+",
+      "name": "constant.numeric.line-number.c64"
+    },
+    {
+      "name": "comment.line.rem.c64",
+      "begin": "(?i)\\bREM\\b",
+      "end": "$"
+    },
+    {
+      "name": "string.quoted.double.c64",
+      "begin": "\"",
+      "end": "\""
+    },
+    {
+      "match": "(?i)\\b(?:PRINT|GOTO|GOSUB|RETURN|FOR|TO|STEP|NEXT|IF|THEN|AND|OR|NOT|INPUT|GET|READ|RESTORE|DATA|DIM|LET|END|STOP|POKE|PEEK|SYS|WAIT|ON|RUN|LIST|NEW|CLR|CONT|LOAD|SAVE|OPEN|CLOSE|CMD|TAB|SPC|CHR\\$|STR\\$|VAL|ASC|LEFT\\$|RIGHT\\$|MID\\$|LEN|RND|INT|ABS|SGN|SQR|SIN|COS|TAN|ATN|LOG|EXP|FRE|POS|USR)\\b",
+      "name": "keyword.control.basic.c64"
+    },
+    {
+      "match": "\\b\\d+(?:\\.\\d+)?\\b",
+      "name": "constant.numeric.c64"
+    },
+    {
+      "match": "[=+*/<>-]",
+      "name": "keyword.operator.c64"
+    }
+  ]
+}

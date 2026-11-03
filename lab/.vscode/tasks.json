@@ -1,0 +1,63 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "C64: Build and Run current BASIC listing",
+      "type": "shell",
+      "command": "${workspaceFolder}\\run-c64.bat",
+      "args": [
+        "${file}"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": {
+        "owner": "c64",
+        "fileLocation": "absolute",
+        "pattern": {
+          "regexp": "^(.+)\\((\\d+)\\): (error|warning): (.+)$",
+          "file": 1,
+          "line": 2,
+          "severity": 3,
+          "message": 4
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "C64: Run on Save (watch programs)",
+      "type": "shell",
+      "command": "${workspaceFolder}\\watch-c64.bat",
+      "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "problemMatcher": {
+        "owner": "c64-watch",
+        "fileLocation": "absolute",
+        "pattern": {
+          "regexp": "^(.+)\\((\\d+)\\): (error|warning): (.+)$",
+          "file": 1,
+          "line": 2,
+          "severity": 3,
+          "message": 4
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^C64 WATCH: processing",
+          "endsPattern": "^C64 WATCH: idle"
+        }
+      },
+      "presentation": {
+        "reveal": "never",
+        "panel": "dedicated",
+        "clear": false
+      }
+    }
+  ]
+}

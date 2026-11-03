@@ -1,0 +1,88 @@
+<!--
+  PAGE:  The Lab   (Blogger > Pages > New page, title exactly "The Lab" so the URL is /p/the-lab.html)
+  Paste in HTML view.
+-->
+
+<p>Every listing on this site goes through the same bench before it is published: typed into a modern editor, checked line by line, turned into a real Commodore program and run in an emulator. This page describes that bench. It is a work in progress, and every change lands on <a href="https://github.com/c64n/c64-coding" rel="noopener">GitHub</a>.</p>
+
+<div class="info-card">
+  <p class="info-card-title">ON THE BENCH</p>
+  <dl>
+    <dt>Editor</dt><dd>Visual Studio Code</dd>
+    <dt>Emulator</dt><dd>VICE 3.10, x64sc</dd>
+    <dt>Tokenizer</dt><dd>petcat (ships with VICE)</dd>
+    <dt>Glue</dt><dd>Python 3.9+, no extra packages</dd>
+    <dt>Host</dt><dd>Windows</dd>
+  </dl>
+</div>
+
+<h2>From listing to READY.</h2>
+
+<p>A listing starts life as a plain text file, <code>ZARIA.bas</code> for example. Saving it sets off five steps:</p>
+
+<ol class="pipeline">
+  <li><b>.bas</b><span>The listing, typed in VS Code with C64 BASIC syntax colours.</span></li>
+  <li><b>c64.py</b><span>Checks every line and writes a clean copy for the tokenizer.</span></li>
+  <li><b>petcat -w2</b><span>Turns BASIC V2 text into tokens, exactly as the C64 stores them.</span></li>
+  <li><b>.prg</b><span>A real program file, checked for the $0801 load address.</span></li>
+  <li><b>x64sc</b><span>VICE starts, loads and runs it on its own.</span></li>
+</ol>
+
+<p>In VS Code this is one keystroke: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> builds and runs the file that is open. There is also a watcher: leave it running and every save of a <code>.bas</code> file in <code>programs</code> builds and launches it automatically.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><a href="https://raw.githubusercontent.com/c64n/c64-coding/main/lab/docs/lab-vscode-vice.png"><img alt="VS Code with a listing open next to VICE running the program" height="681" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/lab/docs/lab-vscode-vice.png" style="display:block;width:100%;height:auto;margin:0 auto;border:3px solid #706deb;" width="1366" /></a></td></tr><tr><td class="tr-caption" style="text-align:center;">The bench: BALL.bas in VS Code on the left, the program running in VICE on the right.</td></tr></tbody></table>
+
+<h2>What gets checked</h2>
+
+<p>Typing errors are the enemy of every type-in. The build catches the mechanical ones before the C64 ever sees the program:</p>
+
+<ul>
+  <li>Every line starts with a line number between 0 and 63999.</li>
+  <li>No line number appears twice.</li>
+  <li>Every quote is closed.</li>
+  <li>Only plain ASCII: Greek letters and smart quotes from a word processor are rejected.</li>
+  <li>Commands from other BASICs, such as <code>CLS</code> and <code>CLEAR</code>, raise a warning.</li>
+  <li>The finished .PRG must start at $0801 and its first keyword must really be tokenized.</li>
+  <li>If a build fails, the old .PRG is deleted, so a stale program can never be launched by mistake.</li>
+</ul>
+
+<p>Problems are reported in the same format as a compiler, so VS Code lists them in its Problems panel and jumps to the line:</p>
+
+<pre class="code">D:\c64-coding\lab\programs\ZARIA.bas(54): error: Unterminated quoted string.
+D:\c64-coding\lab\programs\ZARIA.bas(1): error: 1 source validation error(s)</pre>
+
+<p>Runtime errors such as <code>?SYNTAX ERROR</code> or <code>?BAD SUBSCRIPT</code> still happen where they always did: on the Commodore, after you type <span class="cmd">RUN</span>.</p>
+
+<h2>Upper case, lower case, PETSCII</h2>
+
+<p>The C64 does not use ASCII. In its default mode, what a PC calls lower-case letters appear on screen as capitals, and the shifted letters become graphic symbols. That is why the listings here are stored in lower case: type them on a real machine without touching <kbd>SHIFT</kbd> and you get exactly what the listing shows.</p>
+
+<p>The lab leans on the same rule. <code>c64.py</code> lowers every letter before handing the file to petcat, including text inside quotes, so <code>PRINT "HELLO"</code> shows HELLO in capitals. The original <code>.bas</code> file is never changed. Mixed-case text and special PETSCII symbols are written as <code>CHR$()</code> codes, which keeps the listing readable and the result predictable.</p>
+
+<div class="tip"><p>No Greek on a Commodore: the character set simply doesn't have it. Greek programs of the era used Greeklish, Greek written in Latin letters, and so do the listings here.</p></div>
+
+<h2>No lab? No problem</h2>
+
+<p>You don't need any of this to try a program. Every listing on the site has a <span class="cmd">&darr; .PRG</span> button that builds the program in your browser, following the same tokenizing rules as the C64's own ROM. For the Bouncing Ball, the browser's file and the one petcat builds in the lab are identical, byte for byte. Drop the file on a VICE window and it runs. Click the lines of a listing as you type them and the page remembers where you stopped.</p>
+
+<h2>Get the lab</h2>
+
+<p>The whole bench is on GitHub, together with the source and the .PRG of every listing published here:</p>
+
+<pre class="code">c64-coding/
+  lab/                 <span class="dim">the bench: VS Code tasks, c64.py, watcher, syntax colours</span>
+    programs/          <span class="dim">your .bas files; the .prg is built next to each one</span>
+    tools/c64.py       <span class="dim">checks, petcat, VICE launcher, watcher</span>
+    vscode-extension/  <span class="dim">C64 BASIC V2 syntax highlighting</span>
+  listings/            <span class="dim">one folder per article: .bas, .prg, screenshot</span>
+  blogger/             <span class="dim">this site's theme, pages and posts</span></pre>
+
+<p>To set it up on Windows:</p>
+<ol>
+  <li>Install <a href="https://vice-emu.sourceforge.io/" rel="noopener">VICE</a> and Python 3.9 or newer.</li>
+  <li>Download or clone the repository and open the <code>lab</code> folder in VS Code.</li>
+  <li>If VICE is not in <code>D:\GTK3VICE-3.10-win64\bin</code>, change <code>VICE_BIN</code> in <code>run-c64.bat</code> and <code>watch-c64.bat</code>.</li>
+  <li>Open <code>programs\HELLO.bas</code> and press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd>.</li>
+</ol>
+
+<p>If VICE opens and the C64 counts to ten, the bench is ready. Type in a listing, save, and watch it run.</p>
