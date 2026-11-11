@@ -11,6 +11,7 @@ The resistor colour code, both ways: press the colours of the four bands and get
 | Length | 112 lines, 20 blocks (4,829 bytes) |
 | Keys | <kbd>1</kbd>/<kbd>2</kbd> on the menu; digits and <kbd>G</kbd>, <kbd>S</kbd>, <kbd>N</kbd> for colours; INST/DEL and RETURN for a value; <kbd>Q</kbd> quits |
 | Special keys | None |
+| Video | [YouTube](https://youtu.be/-43WT4YlpRo) |
 | Article | [RESISTOR: The Colour Code, Both Ways](https://c64n.blogspot.com/2026/11/resistor-colour-code.html) |
 
 ## Files
