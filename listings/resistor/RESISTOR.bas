@@ -56,9 +56,9 @@
 500 rem ---- a new screen: title, plain resistor, colour keys ----
 505 print chr$(147);chr$(5);tab(10);"resistor colour code"
 510 for j=1 to 4:b(j)=13:next:gosub 600:gosub 650:rem no bands yet
-520 for i=0 to 12:print h$;left$(dn$,17+int(i/4));tab(1+(i-int(i/4)*4)*10);
+520 for i=0 to 12:print h$;left$(dn$,17+int(i/4));tab((i-int(i/4)*4)*10);
 525 y$=chr$(48+i):if i>9 then y$=mid$("gsn",i-9,1):rem the key to press
-530 print chr$(5);y$;" ";k$(c(i));rv$;"  ";ro$;chr$(5);n$(i):next:return
+530 print chr$(5);y$;" ";k$(c(i));bk$;chr$(5);n$(i):next:return:rem 9 wide
 560 rem ---- band j: show p$, wait for a key in ok$, draw the band ----
 565 print h$;left$(dn$,22);tab(1);chr$(5);p$;left$(sp$,38-len(p$))
 575 gosub 700:b(j)=v:x=xb(j):cl=c(v):gosub 680:gosub 650:return
