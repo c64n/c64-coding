@@ -1,0 +1,239 @@
+<!--
+  POST:    RESISTOR: The Colour Code, Both Ways
+  LABELS:  Listing, Utilities
+  PERMALINK (Custom): resistor-colour-code
+  Paste in Blogger: New post > HTML view. Images load from the GitHub repo.
+-->
+
+<div class="info-card">
+  <p class="info-card-title">RESISTOR</p>
+  <dl>
+    <dt>Type</dt><dd>Utility</dd>
+    <dt>Language</dt><dd>Commodore BASIC V2</dd>
+    <dt>Length</dt><dd>112 lines &middot; 19 blocks (4,792 bytes)</dd>
+    <dt>Keys</dt><dd><kbd>1</kbd> or <kbd>2</kbd> on the menu; digits and <kbd>G</kbd>, <kbd>S</kbd>, <kbd>N</kbd> for the colours; <kbd>Q</kbd> quits</dd>
+    <dt>Special keys</dt><dd>None</dd>
+  </dl>
+</div>
+
+<p>Every resistor carries its value in coloured bands. RESISTOR reads them both ways: press the colours and it tells you the value, with the range the tolerance allows; type a value like 4.7k and it tells you the colours. Either way it draws the resistor on the screen and paints each band as you go, in the C64&rsquo;s own colours.</p>
+
+<!-- IMAGE: resistor-colours.png goes here -->
+
+<!--more-->
+
+<h2>The code in the bands</h2>
+
+<p>A four-band resistor is read from the end where the bands are closer together. The first two bands are digits, the third is how many zeros follow them, and the fourth, a little apart from the others, is the tolerance: how far the real resistor may be from the value printed on it.</p>
+
+<table class="data">
+  <thead><tr><th>Colour</th><th>Digit</th><th>Multiplier</th><th>Tolerance</th><th>On the C64</th></tr></thead>
+  <tbody>
+    <tr><td>Black</td><td>0</td><td>&times;1</td><td></td><td>black</td></tr>
+    <tr><td>Brown</td><td>1</td><td>&times;10</td><td>1%</td><td>brown</td></tr>
+    <tr><td>Red</td><td>2</td><td>&times;100</td><td>2%</td><td>red</td></tr>
+    <tr><td>Orange</td><td>3</td><td>&times;1,000</td><td></td><td>orange</td></tr>
+    <tr><td>Yellow</td><td>4</td><td>&times;10,000</td><td></td><td>yellow</td></tr>
+    <tr><td>Green</td><td>5</td><td>&times;100,000</td><td>0.5%</td><td>green</td></tr>
+    <tr><td>Blue</td><td>6</td><td>&times;1,000,000</td><td>0.25%</td><td>blue</td></tr>
+    <tr><td>Violet</td><td>7</td><td>&times;10,000,000</td><td>0.1%</td><td>purple</td></tr>
+    <tr><td>Grey</td><td>8</td><td>&times;100,000,000</td><td>0.05%</td><td>grey</td></tr>
+    <tr><td>White</td><td>9</td><td>&times;1,000,000,000</td><td></td><td>white</td></tr>
+    <tr><td>Gold</td><td></td><td>&times;0.1</td><td>5%</td><td>yellow</td></tr>
+    <tr><td>Silver</td><td></td><td>&times;0.01</td><td>10%</td><td>light grey</td></tr>
+    <tr><td>None</td><td></td><td></td><td>20%</td><td>no band</td></tr>
+  </tbody>
+</table>
+
+<p>So red, violet, orange, gold is 2, 7 and three zeros: 27,000 ohms, or 27k, give or take 5%. The program offers the five most common tolerances: brown, red, gold, silver and none.</p>
+
+<p>The C64 has sixteen colours and no gold, so a gold band is drawn yellow; the name next to it tells the two apart. Violet is the C64&rsquo;s purple, and the body of the resistor is light blue, like most metal-film resistors.</p>
+
+<h2>The listing</h2>
+
+<div class="tip"><p>Type every letter without SHIFT. As in the other recent listings, most lines end with a remark after <code>:REM</code>. The C64 ignores them, so you can leave them out to save typing.</p></div>
+
+<script type="text/plain" class="listing" data-name="RESISTOR">
+10 rem resistor - colour code to value and back
+20 rem c64 coding - c64n.blogspot.com
+30 rem
+100 rem ---- setup ----
+110 poke 53280,0:poke 53281,11:rem black border, dark grey screen
+120 rv$=chr$(18):ro$=chr$(146):lf$=chr$(157):h$=chr$(19):bk$=rv$+" "+ro$
+130 dn$="":for i=1 to 24:dn$=dn$+chr$(17):next:rem 24 cursor downs
+140 dim n$(13),c(13),t(13),k$(15),b(4),xb(4),l$(4)
+150 for i=0 to 13:read n$(i),c(i),t(i):next:rem name, c64 colour, tolerance
+160 for i=0 to 15:read k:k$(i)=chr$(k):next:rem print codes of the colours
+165 for j=1 to 4:read xb(j),l$(j):next:rem column and name of each band
+170 data black,0,0,brown,9,1,red,2,2,orange,8,0,yellow,7,0
+175 data green,5,0,blue,6,0,violet,4,0,grey,12,0,white,1,0
+180 data gold,7,5,silver,15,10,none,14,20,-,14,0
+185 data 144,5,28,159,156,30,31,158,129,149,150,151,152,153,154,155
+188 data 12,"first digit",15,"second digit",18,"multiplier",25,"tolerance"
+190 sp$="":for i=1 to 38:sp$=sp$+" ":next:rem spaces to clear a line
+195 bd$=left$(sp$,20):ld$="":for i=1 to 7:ld$=ld$+chr$(192):next:rem body, lead
+200 rem ---- menu ----
+210 gosub 500
+220 print h$;left$(dn$,22);tab(1);chr$(158);"1 colours to value";
+225 print "  2 value to colours"
+230 print tab(1);chr$(152);"q quit";
+240 get k$:if k$="1" then 300
+250 if k$="2" then 400
+260 if k$="q" then 900
+270 goto 240
+300 rem ---- colours to value ----
+310 gosub 500
+320 j=1:ok$="123456789":p$="first digit: press 1-9":gosub 560
+330 j=2:ok$="0123456789":p$="second digit: press 0-9":gosub 560
+340 j=3:ok$="0123456789gs":p$="multiplier: press 0-9, g or s":gosub 560
+350 gosub 590:rem the tolerance band
+360 gosub 760:gosub 780:p$="":goto 380
+380 rem ---- message p$, then wait for a key ----
+382 print h$;left$(dn$,21);tab(1);chr$(150);p$;left$(sp$,38-len(p$))
+384 print tab(1);chr$(5);"press a key for the menu";left$(sp$,14)
+386 get k$:if k$="" then 386
+388 goto 200
+400 rem ---- value to colours ----
+410 gosub 500:p$="value in ohm, like 470, 4.7k or 2.2m:"
+415 print h$;left$(dn$,21);tab(1);chr$(5);p$:print tab(1);:gosub 870
+420 v=val(s$):u$=right$(s$,1):if u$="k" then v=v*1e3
+425 if u$="m" then v=v*1e6
+430 if u$="g" then v=v*1e9
+435 r=v:m=0:if v<=0 then m=-9:goto 450:rem nothing to work with
+440 if r>=99.5 then r=r/10:m=m+1:goto 440:rem two digits and a power of 10
+445 if r<9.95 then r=r*10:m=m-1:goto 445
+450 if m<-2 or m>9 then p$="out of range: 0.1 ohm to 99g ohm":goto 380
+455 d=int(r+.5):b(1)=int(d/10):b(2)=d-10*b(1):b(3)=m
+460 if m=-1 then b(3)=10:rem gold multiplies by 0.1
+465 if m=-2 then b(3)=11:rem silver by 0.01
+470 for j=1 to 3:x=xb(j):cl=c(b(j)):gosub 680:next:gosub 650
+475 gosub 760:w$="":if abs(r-v)>v/1e6 then w$="rounded to two digits"
+480 gosub 590:gosub 780:p$=w$:goto 380
+500 rem ---- a new screen: title, plain resistor, colour keys ----
+505 print chr$(147);chr$(5);tab(10);"resistor colour code"
+510 for j=1 to 4:b(j)=13:next:gosub 600:gosub 650:rem no bands yet
+520 for i=0 to 12:print h$;left$(dn$,17+int(i/4));tab(1+(i-int(i/4)*4)*10);
+525 y$=chr$(48+i):if i>9 then y$=mid$("gsn",i-9,1):rem the key to press
+530 print chr$(5);y$;" ";k$(c(i));n$(i):next:return
+560 rem ---- band j: show p$, wait for a key in ok$, draw the band ----
+565 print h$;left$(dn$,22);tab(1);chr$(5);p$;left$(sp$,38-len(p$))
+575 gosub 700:b(j)=v:x=xb(j):cl=c(v):gosub 680:gosub 650:return
+590 j=4:ok$="12gsn":p$="tolerance: 1=1% 2=2% g=5% s=10% n=20%":goto 560
+600 rem ---- draw the resistor: leads, body, bands b(1)-b(4) ----
+610 print h$;left$(dn$,5);tab(3);chr$(152);ld$;tab(30);ld$
+620 for y=4 to 6:print h$;left$(dn$,y);tab(10);k$(14);rv$;bd$;ro$:next
+630 for j=1 to 4:x=xb(j):cl=c(b(j)):gosub 680:next:return
+650 rem ---- the four bands in words ----
+655 for j=1 to 4:print h$;left$(dn$,8+j);tab(4);chr$(5);l$(j);tab(18);
+660 print k$(c(b(j)));n$(b(j));"        ":next:return
+680 rem ---- one band in colour cl at column x ----
+690 for y=4 to 6:print h$;left$(dn$,y);tab(x);k$(cl);rv$;"  ";ro$:next:return
+700 rem ---- wait for a key in ok$; v = its colour number ----
+710 get k$:if k$="" then 710
+720 w=0:for i=1 to len(ok$):if mid$(ok$,i,1)=k$ then w=1
+725 next:if w=0 then 710:rem not one of the keys asked for
+730 v=asc(k$)-48:if k$="g" then v=10
+735 if k$="s" then v=11
+740 if k$="n" then v=12
+745 return
+760 rem ---- r = the value of bands 1-3 ----
+762 p=1:if b(3)=10 then p=.1
+764 if b(3)=11 then p=.01
+766 if b(3)>0 and b(3)<10 then for i=1 to b(3):p=p*10:next
+768 r=(10*b(1)+b(2))*p:return
+780 rem ---- show the value and the range the tolerance allows ----
+782 t=t(b(4)):q=r:gosub 800:print h$;left$(dn$,14);tab(4);chr$(5);"value: ";
+784 print chr$(158);v$;" +/-";mid$(str$(t),2);"%       "
+786 r=q*(1-t/100):gosub 800:a$=v$:r=q*(1+t/100):gosub 800
+788 print tab(4);chr$(5);"range: ";chr$(153);a$;" - ";v$;"    ":r=q:return
+800 rem ---- v$ = r as text: 4700 -> "4.7k ohm" ----
+805 u$="":if r>=1e9 then r=r/1e9:u$="g":goto 820
+810 if r>=1e6 then r=r/1e6:u$="m":goto 820
+815 if r>=1e3 then r=r/1e3:u$="k"
+820 f=100:if r<1 then f=1000:rem two decimals, three below 1 ohm
+822 r=int(r*f+.5)/f:v$=mid$(str$(r),2):if left$(v$,1)="." then v$="0"+v$
+825 v$=v$+u$+" ohm":return
+870 rem ---- read a value: digits, point, k/m/g, del and return ----
+872 s$="":print bk$;lf$;:rem our own cursor
+874 get k$:if k$="" then 874
+876 if k$=chr$(13) and s$<>"" then print " ":return
+878 if k$<>chr$(20) or s$="" then 882
+880 s$=left$(s$,len(s$)-1):print " ";lf$;lf$;bk$;lf$;:goto 874
+882 if len(s$)=8 then 874:rem eight characters at most
+884 w=(k$>="0" and k$<="9") or k$="."
+886 if k$="k" or k$="m" or k$="g" then w=-1
+888 if w then s$=s$+k$:print k$;bk$;lf$;
+890 goto 874
+900 rem ---- quit ----
+910 poke 53280,14:poke 53281,6:print chr$(147);chr$(154);"bye!":end
+</script>
+
+<div class="warn"><p>The DATA lines at 170&ndash;188 must be typed exactly: thirteen colours with three values each, sixteen colour codes, and four band positions with their names. A missing comma there gives <code>?OUT OF DATA ERROR IN 150</code> or a wrong colour.</p></div>
+
+<h2>How it works</h2>
+
+<table class="data">
+  <thead><tr><th>Lines</th><th>Block</th></tr></thead>
+  <tbody>
+    <tr><td>100&ndash;195</td><td>Setup: colours, control codes, the colour table</td></tr>
+    <tr><td>200&ndash;270</td><td>Menu</td></tr>
+    <tr><td>300&ndash;360</td><td>Colours to value</td></tr>
+    <tr><td>380&ndash;388</td><td>A message, then back to the menu</td></tr>
+    <tr><td>400&ndash;480</td><td>Value to colours</td></tr>
+    <tr><td>500&ndash;530</td><td>Subroutine: a new screen with the plain resistor and the colour keys</td></tr>
+    <tr><td>560&ndash;590</td><td>Subroutine: ask for one band and paint it</td></tr>
+    <tr><td>600&ndash;690</td><td>Subroutines: draw the resistor, list the bands in words, paint one band</td></tr>
+    <tr><td>700&ndash;745</td><td>Subroutine: wait for one of the allowed keys</td></tr>
+    <tr><td>760&ndash;768</td><td>Subroutine: the value of the bands</td></tr>
+    <tr><td>780&ndash;825</td><td>Subroutines: show the value and its range; a value as text</td></tr>
+    <tr><td>870&ndash;890</td><td>Subroutine: read a value from the keyboard</td></tr>
+    <tr><td>900&ndash;910</td><td>Quit</td></tr>
+  </tbody>
+</table>
+
+<h3>Lines 140&ndash;188: one table for everything</h3>
+<p>Every colour has a number, 0 to 13: the ten digit colours, then gold, silver, &ldquo;none&rdquo; and a dash for a band not chosen yet. For each one the DATA gives three things: its name <code>N$()</code>, the C64 colour that shows it <code>C()</code>, and its tolerance <code>T()</code> where it has one. A second table, <code>K$()</code>, holds the sixteen PRINT codes that switch the text colour, from <code>CHR$(144)</code> for black to <code>CHR$(155)</code> for light grey. So <code>K$(C(V))</code> is the code that paints colour <code>V</code>, whatever it is. Both modes use the same table, which is why they always agree.</p>
+
+<h3>Lines 600&ndash;690: drawing the resistor</h3>
+<p>The leads are seven <code>CHR$(192)</code>, the horizontal line graphic, on each side. The body is three rows of twenty reversed spaces in light blue, and a band is three rows of two reversed spaces in its own colour, printed over the body at column 12, 15, 18 or 25. A reversed space is a solid block in the current text colour, so changing the colour code is all it takes to paint a band.</p>
+
+<h3>Lines 700&ndash;745: only the keys that make sense</h3>
+<p>Each question passes the keys it accepts in <code>OK$</code>: 1&ndash;9 for the first digit (a resistor never starts with black), 0&ndash;9 for the second, 0&ndash;9, <kbd>G</kbd> or <kbd>S</kbd> for the multiplier, and 1, 2, <kbd>G</kbd>, <kbd>S</kbd> or <kbd>N</kbd> for the tolerance. Any other key is ignored, so a wrong band cannot be entered.</p>
+
+<h3>Lines 760&ndash;768: the value</h3>
+<p>The multiplier is built by multiplying 1 by ten, once for each step: three times for orange. Two details matter here. BASIC&rsquo;s <code>^</code> works with logarithms, and it is not exact: <code>10^2</code> prints as 100 but is really 100.0000000298, so <code>PRINT 10^2=100</code> answers 0, false. Repeated multiplication stays exact for whole numbers. And <code>FOR I=1 TO 0</code> still runs once in Commodore BASIC, so the loop is only started when there is something to multiply.</p>
+
+<h3>Lines 435&ndash;465: value to colours</h3>
+<p>Going the other way, the program divides the value by ten until it is below 100, or multiplies it until it is at least 10, counting the steps in <code>M</code>. 4700 becomes 47 after two divisions: yellow, violet, and red for two zeros. 0.47 needs two multiplications, so <code>M</code> is &minus;2 and the multiplier is silver. If the value has more than two significant digits, like 4750, it is rounded to 48 and the program says so. Anything below 0.1 ohm or above 99 gigaohm cannot be written with four bands.</p>
+
+<h3>Lines 800&ndash;825: readable numbers</h3>
+<p>27000 is shown as 27K and 2200000 as 2.2M, rounded to two decimals, or three below 1 ohm so that a 0.1-ohm resistor&rsquo;s range does not round to 0.1 &ndash; 0.1. <code>STR$</code> writes 0.47 as <code>.47</code>, so line 822 puts the zero back in front.</p>
+
+<h3>Lines 870&ndash;890: typing a value</h3>
+<p>The same idea as the input routine in <a href="/2026/11/digital-clock.html">CLOCK</a>, with <code>GET</code> instead of <code>INPUT</code>: digits, a decimal point and the letters K, M and G are accepted, <kbd>INST/DEL</kbd> takes one back, and <kbd>RETURN</kbd> ends it. Line 884 uses a comparison as a number: in BASIC a true comparison is &minus;1 and a false one 0, so <code>W</code> is true for a digit or a point.</p>
+
+<h2>Values to try</h2>
+
+<table class="data">
+  <thead><tr><th>Bands</th><th>Value</th><th>Range</th></tr></thead>
+  <tbody>
+    <tr><td>red violet orange gold</td><td>27K &plusmn;5%</td><td>25.65K &ndash; 28.35K</td></tr>
+    <tr><td>yellow violet red brown</td><td>4.7K &plusmn;1%</td><td>4.65K &ndash; 4.75K</td></tr>
+    <tr><td>red red red red</td><td>2.2K &plusmn;2%</td><td>2.16K &ndash; 2.24K</td></tr>
+    <tr><td>brown black black silver</td><td>10 &plusmn;10%</td><td>9 &ndash; 11</td></tr>
+    <tr><td>yellow violet gold gold</td><td>4.7 &plusmn;5%</td><td>4.47 &ndash; 4.94</td></tr>
+    <tr><td>brown black green none</td><td>1M &plusmn;20%</td><td>800K &ndash; 1.2M</td></tr>
+  </tbody>
+</table>
+
+<h2>Try this</h2>
+<ul>
+  <li><strong>All tolerances:</strong> add <code>5</code>, <code>6</code>, <code>7</code> and <code>8</code> to <code>OK$</code> in line 590 and fill in their tolerances in lines 175 (0.5, 0.25, 0.1, 0.05). Then find room for the longer prompt.</li>
+  <li><strong>Five bands:</strong> precision resistors have three digits before the multiplier. Add a band at column 21 and a third digit.</li>
+  <li><strong>The E12 series:</strong> real resistors come in fixed steps: 10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82. Make the value-to-colours mode suggest the nearest one.</li>
+</ul>
+
+<h2>Run it</h2>
+<p>Press <span class="cmd">&darr; .PRG</span> on the listing and drop the file on a VICE window. Source and program are also on <a href="https://github.com/c64n/c64-coding/tree/main/listings/resistor" rel="noopener">GitHub</a>.</p>
+
+<!-- VIDEO: new YouTube embed goes here -->

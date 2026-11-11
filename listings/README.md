@@ -7,7 +7,8 @@
 7    "QUADRATIC"        PRG
 13   "CLOCK"            PRG
 4    "DODGE"            PRG
-629 BLOCKS FREE.
+19   "RESISTOR"         PRG
+610 BLOCKS FREE.
 READY.
 ```
 
@@ -20,5 +21,6 @@ One folder per listing published on [c64n.blogspot.com](https://c64n.blogspot.co
 | 7 | [QUADRATIC](quadratic) | Maths | [read](https://c64n.blogspot.com/2026/11/quadratic-equations.html) |
 | 13 | [CLOCK](clock) | Utilities | [read](https://c64n.blogspot.com/2026/11/digital-clock.html) |
 | 4 | [DODGE](dodge) | Games (assembly) | [read](https://c64n.blogspot.com/2026/11/dodge.html) |
+| 19 | [RESISTOR](resistor) | Utilities | [read](https://c64n.blogspot.com/2026/11/resistor-colour-code.html) |
 
 To run one, download its `.prg` and drag it onto a [VICE](https://vice-emu.sourceforge.io/) window.

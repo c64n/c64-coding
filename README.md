@@ -28,7 +28,8 @@ This repository holds everything behind the site: the listings, the ready-to-run
 7    "QUADRATIC"        PRG
 13   "CLOCK"            PRG
 4    "DODGE"            PRG
-629 BLOCKS FREE.
+19   "RESISTOR"         PRG
+610 BLOCKS FREE.
 READY.
 ```
 
@@ -39,6 +40,7 @@ READY.
 | 7 | [QUADRATIC](listings/quadratic) | Solves ax²+bx+c=0 (real, double, complex or linear) and checks the answer | Maths | [read](https://c64n.blogspot.com/2026/11/quadratic-equations.html) |
 | 13 | [CLOCK](listings/clock) | A digital clock with big digits, a blinking colon and an alarm | Utilities | [read](https://c64n.blogspot.com/2026/11/digital-clock.html) |
 | 4 | [DODGE](listings/dodge) | A small game in 6502 assembly: dodge the falling rocks. With a BASIC DATA loader to type in | Games | [read](https://c64n.blogspot.com/2026/11/dodge.html) |
+| 19 | [RESISTOR](listings/resistor) | The resistor colour code both ways, with the resistor drawn in colour | Utilities | [read](https://c64n.blogspot.com/2026/11/resistor-colour-code.html) |
 
 ## RUN
 
