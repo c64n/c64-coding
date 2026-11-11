@@ -58,7 +58,7 @@
 510 for j=1 to 4:b(j)=13:next:gosub 600:gosub 650:rem no bands yet
 520 for i=0 to 12:print h$;left$(dn$,17+int(i/4));tab(1+(i-int(i/4)*4)*10);
 525 y$=chr$(48+i):if i>9 then y$=mid$("gsn",i-9,1):rem the key to press
-530 print chr$(5);y$;" ";k$(c(i));n$(i):next:return
+530 print chr$(5);y$;" ";k$(c(i));rv$;"  ";ro$;chr$(5);n$(i):next:return
 560 rem ---- band j: show p$, wait for a key in ok$, draw the band ----
 565 print h$;left$(dn$,22);tab(1);chr$(5);p$;left$(sp$,38-len(p$))
 575 gosub 700:b(j)=v:x=xb(j):cl=c(v):gosub 680:gosub 650:return
@@ -69,7 +69,7 @@
 630 for j=1 to 4:x=xb(j):cl=c(b(j)):gosub 680:next:return
 650 rem ---- the four bands in words ----
 655 for j=1 to 4:print h$;left$(dn$,8+j);tab(4);chr$(5);l$(j);tab(18);
-660 print k$(c(b(j)));n$(b(j));"        ":next:return
+660 print k$(c(b(j)));rv$;"  ";ro$;" ";chr$(5);n$(b(j));"       ":next:return
 680 rem ---- one band in colour cl at column x ----
 690 for y=4 to 6:print h$;left$(dn$,y);tab(x);k$(cl);rv$;"  ";ro$:next:return
 700 rem ---- wait for a key in ok$; v = its colour number ----
