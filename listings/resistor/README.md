@@ -2,6 +2,8 @@
 
 The resistor colour code, both ways: press the colours of the four bands and get the value with the range its tolerance allows, or type a value like `4.7k` and get the colours. The resistor is drawn on the screen and each band is painted as you go.
 
+![The bands painted one by one in VICE](resistor.gif)
+
 | | |
 |---|---|
 | Category | Utilities |
@@ -15,6 +17,8 @@ The resistor colour code, both ways: press the colours of the four bands and get
 
 - [`RESISTOR.bas`](RESISTOR.bas) – the listing, with a remark on most lines. Type every letter without SHIFT; the remarks after `:rem` can be left out.
 - [`RESISTOR.prg`](RESISTOR.prg) – ready to run: drag it onto a VICE window.
+- [`resistor.gif`](resistor.gif), [`resistor-demo.mp4`](resistor-demo.mp4) – recorded in VICE.
+- [`resistor-menu.png`](resistor-menu.png), [`resistor-colours.png`](resistor-colours.png), [`resistor-value.png`](resistor-value.png), [`resistor-lab.png`](resistor-lab.png) – screenshots.
 
 ## How it is built
 

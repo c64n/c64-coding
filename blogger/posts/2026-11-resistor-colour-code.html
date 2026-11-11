@@ -18,7 +18,7 @@
 
 <p>Every resistor carries its value in coloured bands. RESISTOR reads them both ways: press the colours and it tells you the value, with the range the tolerance allows; type a value like 4.7k and it tells you the colours. Either way it draws the resistor on the screen and paints each band as you go, in the C64&rsquo;s own colours.</p>
 
-<!-- IMAGE: resistor-colours.png goes here -->
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="Animation: the bands of a light blue resistor are painted red, violet, orange and gold one after another as keys are pressed" height="384" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/resistor/resistor.gif" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto;border:3px solid #706deb;" width="640" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Red, violet, orange, gold: each band is painted as soon as its key is pressed.</td></tr></tbody></table>
 
 <!--more-->
 
@@ -50,6 +50,8 @@
 <p>The C64 has sixteen colours and no gold, so a gold band is drawn yellow; the name next to it tells the two apart. Violet is the C64&rsquo;s purple, and the body of the resistor is light blue, like most metal-film resistors.</p>
 
 <p>The names are printed in white, each after a small block of its colour. The first version printed each name in its own colour, and on the dark grey screen red, blue and brown words were hard to read; a coloured block and a white word work for every colour, black included.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="The RESISTOR menu: a plain light blue resistor, the four bands still empty, the colour keys with a block of each colour, and the two modes" height="540" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/resistor/resistor-menu.png" style="display:block;width:100%;max-width:711px;height:auto;margin:0 auto;border:3px solid #706deb;" width="711" /></td></tr><tr><td class="tr-caption" style="text-align:center;">The menu, with the key for every colour.</td></tr></tbody></table>
 
 <h2>The listing</h2>
 
@@ -205,6 +207,8 @@
 <h3>Lines 760&ndash;768: the value</h3>
 <p>The multiplier is built by multiplying 1 by ten, once for each step: three times for orange. Two details matter here. BASIC&rsquo;s <code>^</code> works with logarithms, and it is not exact: <code>10^2</code> prints as 100 but is really 100.0000000298, so <code>PRINT 10^2=100</code> answers 0, false. Repeated multiplication stays exact for whole numbers. And <code>FOR I=1 TO 0</code> still runs once in Commodore BASIC, so the loop is only started when there is something to multiply.</p>
 
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="Value to colours: 4.7k gives yellow, violet, red, and silver for 10% tolerance; the range is 4.23K to 5.17K ohm" height="534" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/resistor/resistor-value.png" style="display:block;width:100%;max-width:707px;height:auto;margin:0 auto;border:3px solid #706deb;" width="707" /></td></tr><tr><td class="tr-caption" style="text-align:center;">4.7k typed in: yellow, violet, red, and a silver band for 10%.</td></tr></tbody></table>
+
 <h3>Lines 435&ndash;465: value to colours</h3>
 <p>Going the other way, the program divides the value by ten until it is below 100, or multiplies it until it is at least 10, counting the steps in <code>M</code>. 4700 becomes 47 after two divisions: yellow, violet, and red for two zeros. 0.47 needs two multiplications, so <code>M</code> is &minus;2 and the multiplier is silver. If the value has more than two significant digits, like 4750, it is rounded to 48 and the program says so. Anything below 0.1 ohm or above 99 gigaohm cannot be written with four bands.</p>
 
@@ -213,6 +217,8 @@
 
 <h3>Lines 870&ndash;890: typing a value</h3>
 <p>The same idea as the input routine in <a href="/2026/11/digital-clock.html">CLOCK</a>, with <code>GET</code> instead of <code>INPUT</code>: digits, a decimal point and the letters K, M and G are accepted, <kbd>INST/DEL</kbd> takes one back, and <kbd>RETURN</kbd> ends it. Line 884 uses a comparison as a number: in BASIC a true comparison is &minus;1 and a false one 0, so <code>W</code> is true for a digit or a point.</p>
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><img alt="Colours to value: red, violet, orange, gold is 27K ohm plus or minus 5%, between 25.65K and 28.35K ohm" height="533" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/resistor/resistor-colours.png" style="display:block;width:100%;max-width:711px;height:auto;margin:0 auto;border:3px solid #706deb;" width="711" /></td></tr><tr><td class="tr-caption" style="text-align:center;">Red, violet, orange, gold: 27K &plusmn;5%, and the range it allows.</td></tr></tbody></table>
 
 <h2>Values to try</h2>
 
@@ -239,3 +245,5 @@
 <p>Press <span class="cmd">&darr; .PRG</span> on the listing and drop the file on a VICE window. Source and program are also on <a href="https://github.com/c64n/c64-coding/tree/main/listings/resistor" rel="noopener">GitHub</a>.</p>
 
 <!-- VIDEO: new YouTube embed goes here -->
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left:auto;margin-right:auto;"><tbody><tr><td style="text-align:center;"><a href="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/resistor/resistor-lab.png"><img alt="VS Code with RESISTOR.bas open next to VICE listing the program" height="499" loading="lazy" src="https://raw.githubusercontent.com/c64n/c64-coding/main/listings/resistor/resistor-lab.png" style="display:block;width:100%;height:auto;margin:0 auto;border:3px solid #706deb;" width="1374" /></a></td></tr><tr><td class="tr-caption" style="text-align:center;">In the lab: RESISTOR.bas in VS Code, and the same lines listed on the C64.</td></tr></tbody></table>
